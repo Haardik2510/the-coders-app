@@ -1,5 +1,6 @@
 
 import MainNav from "@/components/MainNav";
+import { MessageCircle, Code2, Award } from "lucide-react";
 import { useEffect } from "react";
 
 const Index = () => {
