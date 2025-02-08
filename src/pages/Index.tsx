@@ -24,13 +24,23 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="p-6 rounded-2xl bg-white/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
+              <div className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   {[...Array(20)].map((_, i) => (
                     <div
                       key={i}
-                      className="absolute w-2 h-2 bg-primary/20 rounded-full"
+                      className="absolute w-2 h-2 rounded-full"
                       style={{
+                        backgroundColor: [
+                          '#9b87f5',
+                          '#7E69AB',
+                          '#6E59A5',
+                          '#D6BCFA',
+                          '#8B5CF6',
+                          '#D946EF',
+                          '#F97316',
+                          '#0EA5E9'
+                        ][i % 8],
                         left: `${Math.random() * 100}%`,
                         top: `${Math.random() * 100}%`,
                         animation: `float${i % 3} ${2 + Math.random() * 3}s linear infinite`
@@ -56,20 +66,30 @@ const Index = () => {
                 </style>
                 <div className="relative z-10">
                   <MessageCircle className="w-8 h-8 text-primary mb-4 group-hover:text-[#ea384c] transition-colors duration-500" />
-                  <h2 className="text-xl font-semibold mb-2 text-gray-900 transition-colors duration-500">Chat with Developers</h2>
-                  <p className="text-gray-600 transition-colors duration-500">
+                  <h2 className="text-xl font-semibold mb-2 text-white transition-colors duration-500">Chat with Developers</h2>
+                  <p className="text-gray-300 transition-colors duration-500">
                     Connect with fellow coders in real-time conversations
                   </p>
                 </div>
               </div>
               
-              <div className="p-6 rounded-2xl bg-white/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
+              <div className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   {[...Array(20)].map((_, i) => (
                     <div
                       key={i}
-                      className="absolute w-2 h-2 bg-primary/20 rounded-full"
+                      className="absolute w-2 h-2 rounded-full"
                       style={{
+                        backgroundColor: [
+                          '#9b87f5',
+                          '#7E69AB',
+                          '#6E59A5',
+                          '#D6BCFA',
+                          '#8B5CF6',
+                          '#D946EF',
+                          '#F97316',
+                          '#0EA5E9'
+                        ][i % 8],
                         left: `${Math.random() * 100}%`,
                         top: `${Math.random() * 100}%`,
                         animation: `float${i % 3} ${2 + Math.random() * 3}s linear infinite`
@@ -79,20 +99,30 @@ const Index = () => {
                 </div>
                 <div className="relative z-10">
                   <Code2 className="w-8 h-8 text-primary mb-4 group-hover:text-[#ea384c] transition-colors duration-500" />
-                  <h2 className="text-xl font-semibold mb-2 text-gray-900 transition-colors duration-500">Solve Together</h2>
-                  <p className="text-gray-600 transition-colors duration-500">
+                  <h2 className="text-xl font-semibold mb-2 text-white transition-colors duration-500">Solve Together</h2>
+                  <p className="text-gray-300 transition-colors duration-500">
                     Collaborate on coding challenges and grow together
                   </p>
                 </div>
               </div>
               
-              <div className="p-6 rounded-2xl bg-white/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
+              <div className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   {[...Array(20)].map((_, i) => (
                     <div
                       key={i}
-                      className="absolute w-2 h-2 bg-primary/20 rounded-full"
+                      className="absolute w-2 h-2 rounded-full"
                       style={{
+                        backgroundColor: [
+                          '#9b87f5',
+                          '#7E69AB',
+                          '#6E59A5',
+                          '#D6BCFA',
+                          '#8B5CF6',
+                          '#D946EF',
+                          '#F97316',
+                          '#0EA5E9'
+                        ][i % 8],
                         left: `${Math.random() * 100}%`,
                         top: `${Math.random() * 100}%`,
                         animation: `float${i % 3} ${2 + Math.random() * 3}s linear infinite`
@@ -102,20 +132,30 @@ const Index = () => {
                 </div>
                 <div className="relative z-10">
                   <Award className="w-8 h-8 text-primary mb-4 group-hover:text-[#ea384c] transition-colors duration-500" />
-                  <h2 className="text-xl font-semibold mb-2 text-gray-900 transition-colors duration-500">Share Achievements</h2>
-                  <p className="text-gray-600 transition-colors duration-500">
+                  <h2 className="text-xl font-semibold mb-2 text-white transition-colors duration-500">Share Achievements</h2>
+                  <p className="text-gray-300 transition-colors duration-500">
                     Showcase your coding journey and celebrate wins
                   </p>
                 </div>
               </div>
               
-              <div className="p-6 rounded-2xl bg-white/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
+              <div className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   {[...Array(20)].map((_, i) => (
                     <div
                       key={i}
-                      className="absolute w-2 h-2 bg-primary/20 rounded-full"
+                      className="absolute w-2 h-2 rounded-full"
                       style={{
+                        backgroundColor: [
+                          '#9b87f5',
+                          '#7E69AB',
+                          '#6E59A5',
+                          '#D6BCFA',
+                          '#8B5CF6',
+                          '#D946EF',
+                          '#F97316',
+                          '#0EA5E9'
+                        ][i % 8],
                         left: `${Math.random() * 100}%`,
                         top: `${Math.random() * 100}%`,
                         animation: `float${i % 3} ${2 + Math.random() * 3}s linear infinite`
@@ -125,8 +165,8 @@ const Index = () => {
                 </div>
                 <div className="relative z-10">
                   <MessageCircle className="w-8 h-8 text-primary mb-4 group-hover:text-[#ea384c] transition-colors duration-500" />
-                  <h2 className="text-xl font-semibold mb-2 text-gray-900 transition-colors duration-500">Join the Community</h2>
-                  <p className="text-gray-600 transition-colors duration-500">
+                  <h2 className="text-xl font-semibold mb-2 text-white transition-colors duration-500">Join the Community</h2>
+                  <p className="text-gray-300 transition-colors duration-500">
                     Be part of an inclusive coding community
                   </p>
                 </div>
