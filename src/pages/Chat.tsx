@@ -1,99 +1,204 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Send } from "lucide-react";
+import { Avatar } from "@/components/ui/avatar";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { Loader2, UserPlus, UserMinus } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-interface Message {
+interface Profile {
   id: string;
-  content: string;
-  sender: 'user' | 'other';
-  timestamp: Date;
+  username: string | null;
+  avatar_url: string | null;
+}
+
+interface Following {
+  following_id: string;
 }
 
 const Chat = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [newMessage, setNewMessage] = useState("");
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      const message: Message = {
-        id: Date.now().toString(),
-        content: newMessage,
-        sender: 'user',
-        timestamp: new Date(),
-      };
+  // Check authentication status
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session) {
+        navigate('/auth');
+        return;
+      }
+      setCurrentUser(session.user.id);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        navigate('/auth');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
+
+  // Fetch all profiles
+  const { data: profiles, isLoading: profilesLoading } = useQuery({
+    queryKey: ['profiles'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*');
       
-      setMessages([...messages, message]);
-      setNewMessage("");
+      if (error) throw error;
+      return data as Profile[];
+    }
+  });
+
+  // Fetch current user's followings
+  const { data: followings, isLoading: followingsLoading } = useQuery({
+    queryKey: ['followings', currentUser],
+    queryFn: async () => {
+      if (!currentUser) return [];
+      const { data, error } = await supabase
+        .from('follows')
+        .select('following_id')
+        .eq('follower_id', currentUser);
       
-      // Simulate received message
-      setTimeout(() => {
-        const receivedMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          content: "Thanks for your message! This is a demo response.",
-          sender: 'other',
-          timestamp: new Date(),
-        };
-        setMessages(prev => [...prev, receivedMessage]);
-      }, 1000);
+      if (error) throw error;
+      return data as Following[];
+    },
+    enabled: !!currentUser
+  });
+
+  // Follow mutation
+  const followMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase
+        .from('follows')
+        .insert({ follower_id: currentUser, following_id: userId });
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['followings'] });
+      toast({
+        title: "Success",
+        description: "User followed successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    }
+  });
+
+  // Unfollow mutation
+  const unfollowMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      const { error } = await supabase
+        .from('follows')
+        .delete()
+        .eq('follower_id', currentUser)
+        .eq('following_id', userId);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['followings'] });
+      toast({
+        title: "Success",
+        description: "User unfollowed successfully",
+      });
+    },
+    onError: (error) => {
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: error.message,
+      });
+    }
+  });
+
+  const isFollowing = (userId: string) => {
+    return followings?.some(f => f.following_id === userId);
+  };
+
+  const handleFollowToggle = (userId: string) => {
+    if (isFollowing(userId)) {
+      unfollowMutation.mutate(userId);
+    } else {
+      followMutation.mutate(userId);
     }
   };
+
+  const handleProfileClick = (userId: string) => {
+    navigate(`/achievements?userId=${userId}`);
+  };
+
+  if (profilesLoading || followingsLoading) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-black text-white">
       <div className="flex min-h-screen">
         <main className="flex-1 p-6">
-          <div className="max-w-4xl mx-auto flex flex-col h-screen">
-            <h1 className="text-3xl font-bold mb-6">Chat</h1>
+          <div className="max-w-4xl mx-auto">
+            <h1 className="text-3xl font-bold mb-6">Users</h1>
             
-            <ScrollArea className="flex-1 p-4 bg-gray-900 rounded-lg mb-4">
+            <ScrollArea className="h-[70vh] rounded-md border border-gray-800 p-4">
               <div className="space-y-4">
-                {messages.map((message) => (
+                {profiles?.map((profile) => (
                   <div
-                    key={message.id}
-                    className={`flex ${
-                      message.sender === 'user' ? 'justify-end' : 'justify-start'
-                    }`}
+                    key={profile.id}
+                    className="flex items-center justify-between p-4 rounded-lg bg-gray-900 hover:bg-gray-800 transition-colors"
                   >
-                    <div
-                      className={`max-w-[70%] rounded-lg p-3 ${
-                        message.sender === 'user'
-                          ? 'bg-primary text-white'
-                          : 'bg-gray-800 text-white'
-                      }`}
+                    <div 
+                      className="flex items-center space-x-4 cursor-pointer"
+                      onClick={() => handleProfileClick(profile.id)}
                     >
-                      <p>{message.content}</p>
-                      <span className="text-xs opacity-70">
-                        {message.timestamp.toLocaleTimeString()}
-                      </span>
+                      <Avatar>
+                        <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
+                          {profile.username?.[0]?.toUpperCase() || '?'}
+                        </div>
+                      </Avatar>
+                      <div>
+                        <p className="font-medium">{profile.username || 'Anonymous'}</p>
+                      </div>
                     </div>
+                    
+                    {currentUser !== profile.id && (
+                      <Button
+                        variant={isFollowing(profile.id) ? "destructive" : "default"}
+                        size="sm"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleFollowToggle(profile.id);
+                        }}
+                        disabled={followMutation.isPending || unfollowMutation.isPending}
+                      >
+                        {isFollowing(profile.id) ? (
+                          <UserMinus className="h-4 w-4 mr-2" />
+                        ) : (
+                          <UserPlus className="h-4 w-4 mr-2" />
+                        )}
+                        {isFollowing(profile.id) ? 'Unfollow' : 'Follow'}
+                      </Button>
+                    )}
                   </div>
                 ))}
               </div>
             </ScrollArea>
-            
-            <div className="flex gap-2">
-              <Textarea
-                value={newMessage}
-                onChange={(e) => setNewMessage(e.target.value)}
-                placeholder="Type your message..."
-                className="bg-gray-900 text-white border-gray-800"
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }
-                }}
-              />
-              <Button 
-                onClick={handleSendMessage}
-                className="bg-primary hover:bg-primary/90"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </div>
           </div>
         </main>
       </div>
