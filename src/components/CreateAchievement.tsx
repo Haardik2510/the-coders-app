@@ -20,10 +20,18 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
     setIsLoading(true);
 
     try {
+      // Get the current user's ID
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("You must be logged in to create an achievement");
+      }
+
       const { error } = await supabase.from("achievements").insert({
         title,
         description,
         type,
+        user_id: user.id
       });
 
       if (error) throw error;
