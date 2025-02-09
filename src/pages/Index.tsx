@@ -1,12 +1,38 @@
-
 import MainNav from "@/components/MainNav";
 import { MessageCircle, Code2, Award } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const [session, setSession] = useState<any>(null);
+
   useEffect(() => {
     document.title = "CodersApp: The Universe for Coders";
+    
+    // Check current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+    });
+
+    // Listen for auth changes
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
+
+  const handleCardClick = (route: string) => {
+    if (!session) {
+      navigate('/auth');
+    } else {
+      navigate(route);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-soft-purple/50 to-white">
@@ -24,7 +50,10 @@ const Index = () => {
             </div>
             
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
+              <div 
+                onClick={() => handleCardClick('/chat')}
+                className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden cursor-pointer"
+              >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   {[...Array(20)].map((_, i) => (
                     <div
@@ -73,7 +102,10 @@ const Index = () => {
                 </div>
               </div>
               
-              <div className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
+              <div 
+                onClick={() => handleCardClick('/solve')}
+                className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden cursor-pointer"
+              >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   {[...Array(20)].map((_, i) => (
                     <div
@@ -106,7 +138,10 @@ const Index = () => {
                 </div>
               </div>
               
-              <div className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
+              <div 
+                onClick={() => handleCardClick('/achievements')}
+                className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden cursor-pointer"
+              >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   {[...Array(20)].map((_, i) => (
                     <div
@@ -139,7 +174,10 @@ const Index = () => {
                 </div>
               </div>
               
-              <div className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden">
+              <div 
+                onClick={() => handleCardClick('/chat')}
+                className="p-6 rounded-2xl bg-[#000000e6]/80 backdrop-blur shadow-lg transition-all duration-500 ease-in-out group hover:shadow-2xl hover:shadow-primary/20 relative overflow-hidden cursor-pointer"
+              >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                   {[...Array(20)].map((_, i) => (
                     <div

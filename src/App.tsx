@@ -9,6 +9,7 @@ import NotFound from "./pages/NotFound";
 import Chat from "./pages/Chat";
 import Solve from "./pages/Solve";
 import Achievements from "./pages/Achievements";
+import Auth from "./pages/Auth";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -30,6 +31,7 @@ const App = () => {
             <Route path="/chat" element={<Chat />} />
             <Route path="/solve" element={<Solve />} />
             <Route path="/achievements" element={<Achievements />} />
+            <Route path="/auth" element={<Auth />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
           <Toaster />
@@ -41,4 +43,3 @@ const App = () => {
 };
 
 export default App;
-
