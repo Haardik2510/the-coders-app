@@ -35,37 +35,46 @@ interface UserMenuProps {
 
 const UserMenu = ({ currentUserProfile, showProfileSettings, setShowProfileSettings, onLogout }: UserMenuProps) => {
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon">
-          <User className="h-5 w-5" />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <Sheet open={showProfileSettings} onOpenChange={setShowProfileSettings}>
-          <SheetTrigger asChild>
-            <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-              Profile Settings
-            </DropdownMenuItem>
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle>Profile Settings</SheetTitle>
-            </SheetHeader>
-            {currentUserProfile && (
-              <ProfileSettings
-                profile={currentUserProfile}
-                onClose={() => setShowProfileSettings(false)}
-              />
-            )}
-          </SheetContent>
-        </Sheet>
-        <DropdownMenuItem onClick={onLogout}>
-          <LogOut className="h-4 w-4 mr-2" />
-          Logout
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+    <div className="flex items-center gap-2">
+      {currentUserProfile?.username && (
+        <span className="text-sm font-medium">{currentUserProfile.username}</span>
+      )}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon">
+            <User className="h-5 w-5" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <Sheet open={showProfileSettings} onOpenChange={setShowProfileSettings}>
+            <SheetTrigger asChild>
+              <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                Profile Settings
+              </DropdownMenuItem>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Profile Settings</SheetTitle>
+              </SheetHeader>
+              {currentUserProfile && (
+                <ProfileSettings
+                  profile={currentUserProfile}
+                  onClose={() => setShowProfileSettings(false)}
+                  onProfileUpdate={(updatedProfile) => {
+                    // Force a re-render with the updated profile
+                    window.location.reload();
+                  }}
+                />
+              )}
+            </SheetContent>
+          </Sheet>
+          <DropdownMenuItem onClick={onLogout}>
+            <LogOut className="h-4 w-4 mr-2" />
+            Logout
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 };
 

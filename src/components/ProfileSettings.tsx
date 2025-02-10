@@ -21,6 +21,7 @@ import { PasswordChange } from "./profile/PasswordChange";
 
 interface ProfileSettingsProps {
   onClose: () => void;
+  onProfileUpdate?: (profile: any) => void;
   profile: {
     username: string | null;
     full_name: string | null;
@@ -31,7 +32,7 @@ interface ProfileSettingsProps {
   };
 }
 
-const ProfileSettings = ({ onClose, profile }: ProfileSettingsProps) => {
+const ProfileSettings = ({ onClose, onProfileUpdate, profile }: ProfileSettingsProps) => {
   const [username, setUsername] = useState(profile.username || "");
   const [fullName, setFullName] = useState(profile.full_name || "");
   const [age, setAge] = useState(profile.age?.toString() || "");
@@ -66,16 +67,18 @@ const ProfileSettings = ({ onClose, profile }: ProfileSettingsProps) => {
   const handleUpdateProfile = async () => {
     try {
       setLoading(true);
+      const updatedProfile = {
+        username,
+        full_name: fullName,
+        age: age ? parseInt(age) : null,
+        date_of_birth: dateOfBirth || null,
+        gender: gender || null,
+        avatar_url: avatarUrl,
+      };
+
       const { error } = await supabase
         .from("profiles")
-        .update({
-          username,
-          full_name: fullName,
-          age: age ? parseInt(age) : null,
-          date_of_birth: dateOfBirth || null,
-          gender: gender || null,
-          avatar_url: avatarUrl,
-        })
+        .update(updatedProfile)
         .eq("id", (await supabase.auth.getUser()).data.user?.id);
 
       if (error) throw error;
@@ -85,6 +88,12 @@ const ProfileSettings = ({ onClose, profile }: ProfileSettingsProps) => {
         description: "Profile updated successfully",
       });
       setHasUnsavedChanges(false);
+      
+      // Call the onProfileUpdate callback with the updated profile
+      if (onProfileUpdate) {
+        onProfileUpdate(updatedProfile);
+      }
+      
       onClose();
     } catch (error: any) {
       toast({
