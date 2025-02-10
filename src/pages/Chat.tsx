@@ -1,36 +1,16 @@
 
 import { useState, useEffect, useRef } from "react";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Avatar } from "@/components/ui/avatar";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import {
-  Loader2,
-  UserPlus,
-  UserMinus,
-  ArrowLeft,
-  User,
-  LogOut,
-} from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ChatMessage from "@/components/ChatMessage";
-import { Input } from "@/components/ui/input";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import ProfileSettings from "@/components/ProfileSettings";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import UsersList from "@/components/UsersList";
+import ChatHeader from "@/components/ChatHeader";
+import ChatInput from "@/components/ChatInput";
+import UserMenu from "@/components/UserMenu";
 
 interface Profile {
   id: string;
@@ -277,72 +257,23 @@ const Chat = () => {
           <div className="max-w-4xl mx-auto">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-3xl font-bold">Chat</h1>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <User className="h-5 w-5" />
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <Sheet open={showProfileSettings} onOpenChange={setShowProfileSettings}>
-                    <SheetTrigger asChild>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Profile Settings
-                      </DropdownMenuItem>
-                    </SheetTrigger>
-                    <SheetContent>
-                      <SheetHeader>
-                        <SheetTitle>Profile Settings</SheetTitle>
-                      </SheetHeader>
-                      {currentUserProfile && (
-                        <ProfileSettings
-                          profile={currentUserProfile}
-                          onClose={() => setShowProfileSettings(false)}
-                        />
-                      )}
-                    </SheetContent>
-                  </Sheet>
-                  <DropdownMenuItem onClick={handleLogout}>
-                    <LogOut className="h-4 w-4 mr-2" />
-                    Logout
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <UserMenu
+                currentUserProfile={currentUserProfile}
+                showProfileSettings={showProfileSettings}
+                setShowProfileSettings={setShowProfileSettings}
+                onLogout={handleLogout}
+              />
             </div>
 
             {selectedUserId ? (
               <div className="h-[90vh] flex flex-col">
-                <div className="flex items-center space-x-4 mb-6">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => navigate('/chat')}
-                  >
-                    <ArrowLeft className="h-5 w-5" />
-                  </Button>
-                  <Avatar>
-                    <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
-                      {selectedUser?.username?.[0]?.toUpperCase() || '?'}
-                    </div>
-                  </Avatar>
-                  <div className="flex-1">
-                    <p className="font-medium">{selectedUser?.username || 'Anonymous'}</p>
-                  </div>
-                  {currentUser !== selectedUserId && (
-                    <Button
-                      variant={isFollowing(selectedUserId) ? "destructive" : "default"}
-                      size="sm"
-                      onClick={() => handleFollowToggle(selectedUserId)}
-                    >
-                      {isFollowing(selectedUserId) ? (
-                        <UserMinus className="h-4 w-4 mr-2" />
-                      ) : (
-                        <UserPlus className="h-4 w-4 mr-2" />
-                      )}
-                      {isFollowing(selectedUserId) ? 'Unfollow' : 'Follow'}
-                    </Button>
-                  )}
-                </div>
+                <ChatHeader
+                  selectedUser={selectedUser}
+                  selectedUserId={selectedUserId}
+                  currentUser={currentUser || ''}
+                  isFollowing={isFollowing(selectedUserId)}
+                  onFollowToggle={handleFollowToggle}
+                />
                 
                 <ScrollArea ref={scrollRef} className="flex-1 pr-4">
                   <div className="space-y-4">
@@ -365,66 +296,20 @@ const Chat = () => {
                   </div>
                 </ScrollArea>
 
-                <form onSubmit={handleSendMessage} className="mt-4 flex space-x-2">
-                  <Input
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Type your message..."
-                    className="flex-1 bg-gray-900 border-gray-800 text-white"
-                  />
-                  <Button 
-                    type="submit" 
-                    disabled={sendMessageMutation.isPending || !newMessage.trim()}
-                  >
-                    {sendMessageMutation.isPending ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      'Send'
-                    )}
-                  </Button>
-                </form>
+                <ChatInput
+                  newMessage={newMessage}
+                  setNewMessage={setNewMessage}
+                  onSendMessage={handleSendMessage}
+                  isPending={sendMessageMutation.isPending}
+                />
               </div>
             ) : (
-              <ScrollArea className="h-[70vh] rounded-md border border-gray-800 p-4">
-                <div className="space-y-4">
-                  {profiles?.map((profile) => (
-                    profile.id !== currentUser && (
-                      <div
-                        key={profile.id}
-                        className="flex items-center justify-between p-4 rounded-lg bg-gray-900 hover:bg-gray-800 transition-colors cursor-pointer"
-                        onClick={() => navigate(`/chat?userId=${profile.id}`)}
-                      >
-                        <div className="flex items-center space-x-4">
-                          <Avatar>
-                            <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
-                              {profile.username?.[0]?.toUpperCase() || '?'}
-                            </div>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium">{profile.username || 'Anonymous'}</p>
-                          </div>
-                        </div>
-                        
-                        <Button
-                          variant={isFollowing(profile.id) ? "destructive" : "default"}
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleFollowToggle(profile.id);
-                          }}
-                        >
-                          {isFollowing(profile.id) ? (
-                            <UserMinus className="h-4 w-4 mr-2" />
-                          ) : (
-                            <UserPlus className="h-4 w-4 mr-2" />
-                          )}
-                          {isFollowing(profile.id) ? 'Unfollow' : 'Follow'}
-                        </Button>
-                      </div>
-                    )
-                  ))}
-                </div>
-              </ScrollArea>
+              <UsersList
+                profiles={profiles || []}
+                currentUser={currentUser || ''}
+                followings={followings || []}
+                onFollowToggle={handleFollowToggle}
+              />
             )}
           </div>
         </main>
