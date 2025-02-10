@@ -6,15 +6,40 @@ import { Avatar } from "@/components/ui/avatar";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, UserPlus, UserMinus, ArrowLeft } from "lucide-react";
+import {
+  Loader2,
+  UserPlus,
+  UserMinus,
+  ArrowLeft,
+  User,
+  LogOut,
+} from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import ChatMessage from "@/components/ChatMessage";
 import { Input } from "@/components/ui/input";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import ProfileSettings from "@/components/ProfileSettings";
 
 interface Profile {
   id: string;
   username: string | null;
   avatar_url: string | null;
+  full_name: string | null;
+  age: number | null;
+  date_of_birth: string | null;
+  gender: string | null;
 }
 
 interface Following {
@@ -39,6 +64,7 @@ const Chat = () => {
   const selectedUserId = searchParams.get("userId");
   const [newMessage, setNewMessage] = useState("");
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [showProfileSettings, setShowProfileSettings] = useState(false);
 
   // Check authentication status
   useEffect(() => {
@@ -72,6 +98,53 @@ const Chat = () => {
     }
   });
 
+  // Fetch current user's profile
+  const { data: currentUserProfile } = useQuery({
+    queryKey: ['profile', currentUser],
+    queryFn: async () => {
+      if (!currentUser) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', currentUser)
+        .single();
+      
+      if (error) throw error;
+      return data as Profile;
+    },
+    enabled: !!currentUser
+  });
+
+  // Setup real-time messages subscription
+  useEffect(() => {
+    if (!currentUser || !selectedUserId) return;
+
+    const channel = supabase
+      .channel('messages_channel')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `sender_id=eq.${currentUser},receiver_id=eq.${selectedUserId}`
+        },
+        (payload) => {
+          queryClient.setQueryData(['messages', currentUser, selectedUserId], 
+            (oldData: Message[] | undefined) => {
+              if (!oldData) return [payload.new as Message];
+              return [...oldData, payload.new as Message];
+            }
+          );
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [currentUser, selectedUserId, queryClient]);
+
   // Fetch messages for selected user
   const { data: messages, isLoading: messagesLoading } = useQuery({
     queryKey: ['messages', currentUser, selectedUserId],
@@ -104,7 +177,6 @@ const Chat = () => {
       if (error) throw error;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['messages'] });
       setNewMessage("");
     },
     onError: (error) => {
@@ -183,6 +255,11 @@ const Chat = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/auth');
+  };
+
   const selectedUser = profiles?.find(p => p.id === selectedUserId);
 
   if (profilesLoading || followingsLoading) {
@@ -198,6 +275,41 @@ const Chat = () => {
       <div className="flex min-h-screen">
         <main className="flex-1 p-6">
           <div className="max-w-4xl mx-auto">
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-3xl font-bold">Chat</h1>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <User className="h-5 w-5" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <Sheet open={showProfileSettings} onOpenChange={setShowProfileSettings}>
+                    <SheetTrigger asChild>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Profile Settings
+                      </DropdownMenuItem>
+                    </SheetTrigger>
+                    <SheetContent>
+                      <SheetHeader>
+                        <SheetTitle>Profile Settings</SheetTitle>
+                      </SheetHeader>
+                      {currentUserProfile && (
+                        <ProfileSettings
+                          profile={currentUserProfile}
+                          onClose={() => setShowProfileSettings(false)}
+                        />
+                      )}
+                    </SheetContent>
+                  </Sheet>
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 mr-2" />
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+
             {selectedUserId ? (
               <div className="h-[90vh] flex flex-col">
                 <div className="flex items-center space-x-4 mb-6">
@@ -273,49 +385,46 @@ const Chat = () => {
                 </form>
               </div>
             ) : (
-              <>
-                <h1 className="text-3xl font-bold mb-6">Chat</h1>
-                <ScrollArea className="h-[70vh] rounded-md border border-gray-800 p-4">
-                  <div className="space-y-4">
-                    {profiles?.map((profile) => (
-                      profile.id !== currentUser && (
-                        <div
-                          key={profile.id}
-                          className="flex items-center justify-between p-4 rounded-lg bg-gray-900 hover:bg-gray-800 transition-colors cursor-pointer"
-                          onClick={() => navigate(`/chat?userId=${profile.id}`)}
-                        >
-                          <div className="flex items-center space-x-4">
-                            <Avatar>
-                              <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
-                                {profile.username?.[0]?.toUpperCase() || '?'}
-                              </div>
-                            </Avatar>
-                            <div>
-                              <p className="font-medium">{profile.username || 'Anonymous'}</p>
+              <ScrollArea className="h-[70vh] rounded-md border border-gray-800 p-4">
+                <div className="space-y-4">
+                  {profiles?.map((profile) => (
+                    profile.id !== currentUser && (
+                      <div
+                        key={profile.id}
+                        className="flex items-center justify-between p-4 rounded-lg bg-gray-900 hover:bg-gray-800 transition-colors cursor-pointer"
+                        onClick={() => navigate(`/chat?userId=${profile.id}`)}
+                      >
+                        <div className="flex items-center space-x-4">
+                          <Avatar>
+                            <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
+                              {profile.username?.[0]?.toUpperCase() || '?'}
                             </div>
+                          </Avatar>
+                          <div>
+                            <p className="font-medium">{profile.username || 'Anonymous'}</p>
                           </div>
-                          
-                          <Button
-                            variant={isFollowing(profile.id) ? "destructive" : "default"}
-                            size="sm"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleFollowToggle(profile.id);
-                            }}
-                          >
-                            {isFollowing(profile.id) ? (
-                              <UserMinus className="h-4 w-4 mr-2" />
-                            ) : (
-                              <UserPlus className="h-4 w-4 mr-2" />
-                            )}
-                            {isFollowing(profile.id) ? 'Unfollow' : 'Follow'}
-                          </Button>
                         </div>
-                      )
-                    ))}
-                  </div>
-                </ScrollArea>
-              </>
+                        
+                        <Button
+                          variant={isFollowing(profile.id) ? "destructive" : "default"}
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleFollowToggle(profile.id);
+                          }}
+                        >
+                          {isFollowing(profile.id) ? (
+                            <UserMinus className="h-4 w-4 mr-2" />
+                          ) : (
+                            <UserPlus className="h-4 w-4 mr-2" />
+                          )}
+                          {isFollowing(profile.id) ? 'Unfollow' : 'Follow'}
+                        </Button>
+                      </div>
+                    )
+                  ))}
+                </div>
+              </ScrollArea>
             )}
           </div>
         </main>
