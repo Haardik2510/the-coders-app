@@ -32,6 +32,7 @@ interface Message {
   receiver_id: string;
   created_at: string;
   read: boolean;
+  attachment_type?: 'text' | 'voice' | 'file';
 }
 
 const Chat = () => {
@@ -348,6 +349,7 @@ const Chat = () => {
                           content={message.content}
                           isSender={message.sender_id === currentUser}
                           timestamp={message.created_at}
+                          attachmentType={message.attachment_type}
                         />
                       ))
                     )}
@@ -359,6 +361,8 @@ const Chat = () => {
                   setNewMessage={setNewMessage}
                   onSendMessage={handleSendMessage}
                   isPending={sendMessageMutation.isPending}
+                  currentUser={currentUser || ''}
+                  selectedUserId={selectedUserId}
                 />
               </div>
             ) : (

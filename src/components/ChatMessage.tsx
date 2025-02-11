@@ -5,9 +5,35 @@ interface ChatMessageProps {
   content: string;
   isSender: boolean;
   timestamp: string;
+  attachmentType?: 'text' | 'voice' | 'file';
 }
 
-const ChatMessage = ({ content, isSender, timestamp }: ChatMessageProps) => {
+const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text' }: ChatMessageProps) => {
+  const renderContent = () => {
+    switch (attachmentType) {
+      case 'voice':
+        return (
+          <audio controls className="max-w-full">
+            <source src={content} type="audio/webm" />
+            Your browser does not support the audio element.
+          </audio>
+        );
+      case 'file':
+        return (
+          <a 
+            href={content} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="text-blue-400 hover:underline"
+          >
+            📎 Attachment
+          </a>
+        );
+      default:
+        return <p className="break-words">{content}</p>;
+    }
+  };
+
   return (
     <div
       className={cn(
@@ -21,7 +47,7 @@ const ChatMessage = ({ content, isSender, timestamp }: ChatMessageProps) => {
           isSender ? "bg-primary text-white" : "bg-gray-900 text-white"
         )}
       >
-        <p className="break-words">{content}</p>
+        {renderContent()}
         <span className="mt-1 text-xs opacity-70">
           {new Date(timestamp).toLocaleTimeString()}
         </span>
