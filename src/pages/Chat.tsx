@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
@@ -107,9 +106,10 @@ const Chat = () => {
           event: 'INSERT',
           schema: 'public',
           table: 'messages',
-          filter: `sender_id=eq.${currentUser},receiver_id=eq.${selectedUserId}`
+          filter: `or(and(sender_id.eq.${currentUser},receiver_id.eq.${selectedUserId}),and(sender_id.eq.${selectedUserId},receiver_id.eq.${currentUser}))`,
         },
         (payload) => {
+          console.log('New message received:', payload);
           queryClient.setQueryData(['messages', currentUser, selectedUserId], 
             (oldData: Message[] | undefined) => {
               if (!oldData) return [payload.new as Message];
@@ -120,52 +120,109 @@ const Chat = () => {
       )
       .subscribe();
 
+    console.log('Subscribed to real-time messages');
+
     return () => {
+      console.log('Unsubscribing from real-time messages');
       supabase.removeChannel(channel);
     };
   }, [currentUser, selectedUserId, queryClient]);
 
-  // Fetch messages for selected user
+  // Fetch messages for selected user with real-time updates enabled
   const { data: messages, isLoading: messagesLoading } = useQuery({
     queryKey: ['messages', currentUser, selectedUserId],
     queryFn: async () => {
       if (!currentUser || !selectedUserId) return [];
+      
+      console.log('Fetching messages for conversation:', currentUser, selectedUserId);
+      
       const { data, error } = await supabase
         .from('messages')
         .select('*')
         .or(`and(sender_id.eq.${currentUser},receiver_id.eq.${selectedUserId}),and(sender_id.eq.${selectedUserId},receiver_id.eq.${currentUser})`)
         .order('created_at', { ascending: true });
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching messages:', error);
+        throw error;
+      }
+      
+      console.log('Fetched messages:', data);
       return data as Message[];
     },
-    enabled: !!currentUser && !!selectedUserId
+    enabled: !!currentUser && !!selectedUserId,
+    refetchOnWindowFocus: false,
   });
 
-  // Send message mutation
+  // Send message mutation with optimistic updates
   const sendMessageMutation = useMutation({
     mutationFn: async (content: string) => {
       if (!currentUser || !selectedUserId) throw new Error("Not authenticated");
+      
+      console.log('Sending message:', content);
+      
+      const newMessage = {
+        content,
+        sender_id: currentUser,
+        receiver_id: selectedUserId,
+        created_at: new Date().toISOString(),
+        read: false,
+      };
+
       const { error } = await supabase
         .from('messages')
-        .insert({ 
-          content,
-          sender_id: currentUser,
-          receiver_id: selectedUserId
-        });
+        .insert(newMessage);
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error sending message:', error);
+        throw error;
+      }
+
+      return newMessage;
     },
-    onSuccess: () => {
-      setNewMessage("");
+    onMutate: async (newContent) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['messages', currentUser, selectedUserId] });
+
+      // Snapshot the previous value
+      const previousMessages = queryClient.getQueryData(['messages', currentUser, selectedUserId]);
+
+      // Optimistically update to the new value
+      if (currentUser && selectedUserId) {
+        queryClient.setQueryData(['messages', currentUser, selectedUserId], 
+          (old: Message[] | undefined) => {
+            const optimisticMessage = {
+              id: 'temp-' + Date.now(),
+              content: newContent,
+              sender_id: currentUser,
+              receiver_id: selectedUserId,
+              created_at: new Date().toISOString(),
+              read: false,
+            };
+            return [...(old || []), optimisticMessage];
+          }
+        );
+      }
+
+      // Return a context object with the snapshotted value
+      return { previousMessages };
     },
-    onError: (error) => {
+    onError: (err, newContent, context) => {
+      console.error('Error in message mutation:', err);
+      queryClient.setQueryData(
+        ['messages', currentUser, selectedUserId],
+        context?.previousMessages
+      );
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: err.message,
       });
-    }
+    },
+    onSettled: () => {
+      // Always refetch after error or success to ensure data consistency
+      queryClient.invalidateQueries({ queryKey: ['messages', currentUser, selectedUserId] });
+    },
   });
 
   // Fetch current user's followings
@@ -187,7 +244,8 @@ const Chat = () => {
   // Auto scroll to bottom when new messages arrive
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      const scrollElement = scrollRef.current;
+      scrollElement.scrollTop = scrollElement.scrollHeight;
     }
   }, [messages]);
 
