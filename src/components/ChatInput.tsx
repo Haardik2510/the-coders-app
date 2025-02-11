@@ -1,10 +1,10 @@
-
 import { useState, useRef } from "react";
 import { Loader2, Mic, MicOff, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import RecordingIndicator from "./RecordingIndicator";
 
 interface ChatInputProps {
   newMessage: string;
@@ -77,7 +77,6 @@ const ChatInput = ({
         .from('chat_attachments')
         .getPublicUrl(filePath);
 
-      // Create a new message with the voice attachment
       await supabase.from('messages').insert({
         content: publicUrl,
         sender_id: currentUser,
@@ -86,8 +85,8 @@ const ChatInput = ({
       });
 
       toast({
-        title: "Success",
-        description: "Voice message sent successfully",
+        title: "Voice message sent",
+        description: "Your voice message has been delivered",
       });
     } catch (error: any) {
       toast({
@@ -136,50 +135,58 @@ const ChatInput = ({
   };
 
   return (
-    <form onSubmit={onSendMessage} className="mt-4 flex items-center space-x-2">
-      <Input
-        type="file"
-        ref={fileInputRef}
-        onChange={handleFileUpload}
-        className="hidden"
-      />
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={() => fileInputRef.current?.click()}
-      >
-        <Upload className="h-5 w-5" />
-      </Button>
-      <Button
-        type="button"
-        variant="ghost"
-        size="icon"
-        onClick={isRecording ? stopRecording : startRecording}
-      >
-        {isRecording ? (
-          <MicOff className="h-5 w-5 text-red-500" />
-        ) : (
-          <Mic className="h-5 w-5" />
-        )}
-      </Button>
-      <Input
-        value={newMessage}
-        onChange={(e) => setNewMessage(e.target.value)}
-        placeholder="Type your message..."
-        className="flex-1 bg-gray-900 border-gray-800 text-white"
-      />
-      <Button 
-        type="submit" 
-        disabled={isPending || (!newMessage.trim() && !isRecording)}
-      >
-        {isPending ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          'Send'
-        )}
-      </Button>
-    </form>
+    <div className="mt-4 space-y-2">
+      {isRecording && (
+        <div className="flex items-center justify-center p-2 bg-gray-800 rounded-lg">
+          <RecordingIndicator />
+        </div>
+      )}
+      <form onSubmit={onSendMessage} className="flex items-center space-x-2">
+        <Input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          className="hidden"
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Upload className="h-5 w-5" />
+        </Button>
+        <Button
+          type="button"
+          variant={isRecording ? "destructive" : "ghost"}
+          size="icon"
+          onClick={isRecording ? stopRecording : startRecording}
+          className={isRecording ? "animate-pulse" : ""}
+        >
+          {isRecording ? (
+            <MicOff className="h-5 w-5" />
+          ) : (
+            <Mic className="h-5 w-5" />
+          )}
+        </Button>
+        <Input
+          value={newMessage}
+          onChange={(e) => setNewMessage(e.target.value)}
+          placeholder="Type your message..."
+          className="flex-1 bg-gray-900 border-gray-800 text-white"
+        />
+        <Button 
+          type="submit" 
+          disabled={isPending || (!newMessage.trim() && !isRecording)}
+        >
+          {isPending ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            'Send'
+          )}
+        </Button>
+      </form>
+    </div>
   );
 };
 

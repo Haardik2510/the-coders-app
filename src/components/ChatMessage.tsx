@@ -13,10 +13,17 @@ const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text' }: 
     switch (attachmentType) {
       case 'voice':
         return (
-          <audio controls className="max-w-full">
-            <source src={content} type="audio/webm" />
-            Your browser does not support the audio element.
-          </audio>
+          <div className="space-y-2">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
+                <Mic className="h-4 w-4" />
+              </div>
+              <audio controls className="max-w-full h-10">
+                <source src={content} type="audio/webm" />
+                Your browser does not support the audio element.
+              </audio>
+            </div>
+          </div>
         );
       case 'file':
         return (
@@ -24,9 +31,10 @@ const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text' }: 
             href={content} 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="text-blue-400 hover:underline"
+            className="flex items-center space-x-2 text-blue-400 hover:underline"
           >
-            📎 Attachment
+            <Upload className="h-4 w-4" />
+            <span>Attachment</span>
           </a>
         );
       default:
@@ -43,14 +51,19 @@ const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text' }: 
     >
       <div
         className={cn(
-          "max-w-[70%] rounded-lg px-4 py-2",
-          isSender ? "bg-primary text-white" : "bg-gray-900 text-white"
+          "max-w-[70%] rounded-2xl px-4 py-2",
+          isSender 
+            ? "bg-primary text-white" 
+            : "bg-gray-800 text-white"
         )}
       >
         {renderContent()}
-        <span className="mt-1 text-xs opacity-70">
-          {new Date(timestamp).toLocaleTimeString()}
-        </span>
+        <div className="mt-1 text-xs opacity-70 flex justify-end">
+          {new Date(timestamp).toLocaleTimeString([], { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          })}
+        </div>
       </div>
     </div>
   );
