@@ -1,5 +1,6 @@
 
 import { cn } from "@/lib/utils";
+import { Mic, Upload } from "lucide-react";
 
 interface ChatMessageProps {
   content: string;
