@@ -51,10 +51,6 @@ const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text', me
   const handleDeleteMessage = async () => {
     try {
       setIsDeleting(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
-
-      // Call the RPC function we created
       const { error } = await supabase.rpc('delete_message_for_user', {
         message_id: messageId,
         user_id: currentUserId
