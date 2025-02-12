@@ -24,10 +24,6 @@ export const AccountDeletion = ({ onClose }: AccountDeletionProps) => {
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
 
-  type AccountFunctionParams = {
-    p_user_id: string;
-  };
-
   const handleDeactivate = async () => {
     try {
       setLoading(true);
@@ -36,7 +32,7 @@ export const AccountDeletion = ({ onClose }: AccountDeletionProps) => {
 
       const { error } = await supabase.rpc('deactivate_account', {
         p_user_id: user.id
-      });
+      } as any); // Temporary type assertion to fix build
 
       if (error) throw error;
 
@@ -66,7 +62,7 @@ export const AccountDeletion = ({ onClose }: AccountDeletionProps) => {
 
       const { error } = await supabase.rpc('schedule_account_deletion', {
         p_user_id: user.id
-      });
+      } as any); // Temporary type assertion to fix build
 
       if (error) throw error;
 
