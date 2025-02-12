@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
@@ -29,8 +30,10 @@ export const AccountDeletion = ({ onClose }: AccountDeletionProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
 
-      const { data, error } = await supabase.rpc('deactivate_account', {
-        user_id: user.id
+      const { error } = await supabase.rpc('deactivate_account', {
+        user_id: user.id,
+      } as {
+        user_id: string;
       });
 
       if (error) throw error;
@@ -59,8 +62,10 @@ export const AccountDeletion = ({ onClose }: AccountDeletionProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
 
-      const { data, error } = await supabase.rpc('schedule_account_deletion', {
-        user_id: user.id
+      const { error } = await supabase.rpc('schedule_account_deletion', {
+        user_id: user.id,
+      } as {
+        user_id: string;
       });
 
       if (error) throw error;
