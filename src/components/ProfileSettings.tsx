@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -18,6 +17,7 @@ import {
 import { ProfilePicture } from "./profile/ProfilePicture";
 import { ProfileForm } from "./profile/ProfileForm";
 import { PasswordChange } from "./profile/PasswordChange";
+import { AccountDeletion } from "./profile/AccountDeletion";
 
 interface ProfileSettingsProps {
   onClose: () => void;
@@ -132,6 +132,8 @@ const ProfileSettings = ({ onClose, onProfileUpdate, profile }: ProfileSettingsP
           />
 
           <PasswordChange loading={loading} setLoading={setLoading} />
+
+          <AccountDeletion onClose={onClose} />
 
           <div className="flex justify-end space-x-2">
             <Button variant="outline" onClick={handleClose}>
