@@ -346,10 +346,12 @@ const Chat = () => {
                       messages?.map((message) => (
                         <ChatMessage
                           key={message.id}
+                          messageId={message.id}
                           content={message.content}
                           isSender={message.sender_id === currentUser}
                           timestamp={message.created_at}
                           attachmentType={message.attachment_type}
+                          currentUserId={currentUser || ''}
                         />
                       ))
                     )}
