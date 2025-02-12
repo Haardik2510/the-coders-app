@@ -31,9 +31,7 @@ export const AccountDeletion = ({ onClose }: AccountDeletionProps) => {
       if (!user) throw new Error("No user found");
 
       const { error } = await supabase.rpc('deactivate_account', {
-        params: {
-          p_user_id: user.id
-        }
+        user_id: user.id
       });
 
       if (error) throw error;
@@ -63,9 +61,7 @@ export const AccountDeletion = ({ onClose }: AccountDeletionProps) => {
       if (!user) throw new Error("No user found");
 
       const { error } = await supabase.rpc('schedule_account_deletion', {
-        params: {
-          p_user_id: user.id
-        }
+        user_id: user.id
       });
 
       if (error) throw error;
