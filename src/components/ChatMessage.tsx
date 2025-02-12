@@ -53,7 +53,7 @@ const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text', me
   const handleDeleteMessage = async () => {
     try {
       setIsDeleting(true);
-      const { error } = await supabase.rpc('delete_message_for_user', {
+      const { data, error } = await supabase.rpc('delete_message_for_user', {
         message_id: messageId,
         user_id: currentUserId
       });
