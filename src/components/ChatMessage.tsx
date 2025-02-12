@@ -1,3 +1,4 @@
+
 import { cn } from "@/lib/utils";
 import { Mic, Upload, Trash2 } from "lucide-react";
 import { useState, useRef } from "react";
@@ -53,9 +54,14 @@ const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text', me
     try {
       setIsDeleting(true);
       
-      const { error } = await supabase.rpc('delete_message_for_user', {
-        message_id: messageId,
-        user_id: currentUserId
+      type DeleteMessageParams = {
+        p_message_id: string;
+        p_user_id: string;
+      };
+      
+      const { error } = await supabase.rpc<void, DeleteMessageParams>('delete_message_for_user', {
+        p_message_id: messageId,
+        p_user_id: currentUserId
       });
 
       if (error) throw error;
