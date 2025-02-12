@@ -1,3 +1,4 @@
+
 import { cn } from "@/lib/utils";
 import { Mic, Upload, Trash2 } from "lucide-react";
 import { useState, useRef } from "react";
@@ -27,6 +28,7 @@ interface ChatMessageProps {
 const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text', messageId, currentUserId }: ChatMessageProps) => {
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
@@ -58,6 +60,7 @@ const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text', me
 
       if (error) throw error;
 
+      setIsDeleted(true);
       toast({
         title: "Message deleted",
         description: "The message has been deleted for you.",
@@ -72,6 +75,22 @@ const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text', me
       setIsDeleting(false);
     }
   };
+
+  if (isDeleted) {
+    return (
+      <div className={cn(
+        "flex w-full space-x-2 p-2",
+        isSender ? "justify-end" : "justify-start"
+      )}>
+        <div className={cn(
+          "max-w-[70%] rounded-2xl px-4 py-2",
+          "bg-gray-800 text-gray-400 italic"
+        )}>
+          <p>Message deleted</p>
+        </div>
+      </div>
+    );
+  }
 
   const renderContent = () => {
     switch (attachmentType) {
