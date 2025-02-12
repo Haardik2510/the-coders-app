@@ -16,9 +16,40 @@ import {
 } from "@/components/ui/popover";
 import { Settings } from "lucide-react";
 
+const THEMES = {
+  light: {
+    background: "bg-white",
+    text: "text-gray-900",
+  },
+  dark: {
+    background: "bg-gray-900",
+    text: "text-white",
+  },
+  gryffindor: {
+    background: "bg-[#740001]",
+    text: "text-[#D3A625]",
+  },
+  slytherin: {
+    background: "bg-[#1A472A]",
+    text: "text-[#AAAAAA]",
+  },
+  ravenclaw: {
+    background: "bg-[#0E1A40]",
+    text: "text-[#946B2D]",
+  },
+  hufflepuff: {
+    background: "bg-[#FFD800]",
+    text: "text-black",
+  },
+  cyberpunk: {
+    background: "bg-[#1A1F2C]",
+    text: "text-[#00FF9F]",
+  },
+} as const;
+
 const NOTIFICATION_MUTE_OPTIONS = {
-  "1h": 60 * 60 * 1000, // 1 hour in milliseconds
-  "24h": 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+  "1h": 60 * 60 * 1000,
+  "24h": 24 * 60 * 60 * 1000,
   "permanent": -1
 };
 
@@ -30,7 +61,10 @@ export const UserSettings = () => {
 
   useEffect(() => {
     // Apply theme
-    document.documentElement.className = theme;
+    const root = document.documentElement;
+    root.className = ''; // Clear existing classes
+    root.classList.add(THEMES[theme as keyof typeof THEMES].background);
+    root.classList.add(THEMES[theme as keyof typeof THEMES].text);
     localStorage.setItem('theme', theme);
   }, [theme]);
 
@@ -48,7 +82,7 @@ export const UserSettings = () => {
     setTheme(newTheme);
     toast({
       title: "Theme updated",
-      description: `Theme changed to ${newTheme} mode`,
+      description: `Theme changed to ${newTheme}`,
     });
   };
 
@@ -97,6 +131,11 @@ export const UserSettings = () => {
               <SelectContent>
                 <SelectItem value="light">Light</SelectItem>
                 <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="gryffindor">Gryffindor</SelectItem>
+                <SelectItem value="slytherin">Slytherin</SelectItem>
+                <SelectItem value="ravenclaw">Ravenclaw</SelectItem>
+                <SelectItem value="hufflepuff">Hufflepuff</SelectItem>
+                <SelectItem value="cyberpunk">Cyberpunk</SelectItem>
               </SelectContent>
             </Select>
           </div>
