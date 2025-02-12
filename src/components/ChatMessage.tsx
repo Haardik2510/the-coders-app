@@ -1,20 +1,8 @@
 
 import { cn } from "@/lib/utils";
-import { Mic, Upload, Trash2 } from "lucide-react";
+import { Mic, Upload } from "lucide-react";
 import { useState, useRef } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 interface ChatMessageProps {
   content: string;
@@ -28,10 +16,8 @@ interface ChatMessageProps {
 const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text', messageId, currentUserId }: ChatMessageProps) => {
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [isPlaying, setIsPlaying] = useState(false);
-  const [isDeleted, setIsDeleted] = useState(false);
   const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSpeedChange = () => {
     if (playbackSpeed === 1) {
@@ -49,50 +35,6 @@ const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text', me
   const handlePlayStateChange = () => {
     setIsPlaying(!audioRef.current?.paused);
   };
-
-  const handleDeleteMessage = async () => {
-    try {
-      setIsDeleting(true);
-      
-      // Cast string IDs to UUID by wrapping them in their original string form
-      const { error } = await supabase.rpc('delete_message_for_user' as any, {
-        message_id: messageId,
-        user_id: currentUserId
-      });
-
-      if (error) throw error;
-
-      setIsDeleted(true);
-      toast({
-        title: "Message deleted",
-        description: "The message has been deleted for you.",
-      });
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
-    } finally {
-      setIsDeleting(false);
-    }
-  };
-
-  if (isDeleted) {
-    return (
-      <div className={cn(
-        "flex w-full space-x-2 p-2",
-        isSender ? "justify-end" : "justify-start"
-      )}>
-        <div className={cn(
-          "max-w-[70%] rounded-2xl px-4 py-2",
-          "bg-gray-800 text-gray-400 italic"
-        )}>
-          <p>Message deleted</p>
-        </div>
-      </div>
-    );
-  }
 
   const renderContent = () => {
     switch (attachmentType) {
@@ -155,33 +97,12 @@ const ChatMessage = ({ content, isSender, timestamp, attachmentType = 'text', me
         className={cn(
           "max-w-[70%] rounded-2xl px-4 py-2 relative group",
           isSender 
-            ? "bg-primary text-white" 
-            : "bg-gray-800 text-white"
+            ? "bg-primary text-primary-foreground"
+            : "bg-muted text-muted-foreground"
         )}
       >
         {renderContent()}
-        <div className="mt-1 text-xs opacity-70 flex justify-between items-center">
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <button className="opacity-0 group-hover:opacity-100 transition-opacity">
-                <Trash2 className="h-4 w-4 text-red-400 hover:text-red-500" />
-              </button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>Delete Message?</AlertDialogTitle>
-                <AlertDialogDescription>
-                  This message will be deleted for you. Other users will still be able to see it.
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={handleDeleteMessage} disabled={isDeleting}>
-                  Delete
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
+        <div className="mt-1 text-xs opacity-70">
           <span>
             {new Date(timestamp).toLocaleTimeString([], { 
               hour: '2-digit', 
