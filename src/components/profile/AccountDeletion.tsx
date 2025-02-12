@@ -30,49 +30,11 @@ export const AccountDeletion = ({ onClose }: AccountDeletionProps) => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("No user found");
 
-      const { error } = await supabase.rpc('deactivate_account' as any, {
-        user_id: user.id
-      });
-
-      if (error) throw error;
-
+      // TODO: Implement account deactivation logic
       toast({
-        title: "Account deactivated",
-        description: "Your account has been deactivated. You can reactivate it by logging in again.",
+        title: "Feature not available",
+        description: "Account deactivation is currently not available.",
       });
-
-      await supabase.auth.signOut();
-      onClose();
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: error.message,
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      setLoading(true);
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("No user found");
-
-      const { error } = await supabase.rpc('schedule_account_deletion' as any, {
-        user_id: user.id
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Account scheduled for deletion",
-        description: "Your account will be permanently deleted after 30 days if you don't log back in.",
-      });
-
-      await supabase.auth.signOut();
-      onClose();
     } catch (error: any) {
       toast({
         variant: "destructive",
@@ -105,28 +67,6 @@ export const AccountDeletion = ({ onClose }: AccountDeletionProps) => {
               <AlertDialogCancel>Cancel</AlertDialogCancel>
               <AlertDialogAction onClick={handleDeactivate} disabled={loading}>
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Deactivate"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="destructive" className="w-full">
-              Delete Account
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete Account?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Your account will be scheduled for permanent deletion. If you don't log back in within 30 days, your account and all associated data will be permanently deleted.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Cancel</AlertDialogCancel>
-              <AlertDialogAction onClick={handleDelete} disabled={loading}>
-                {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Delete"}
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
