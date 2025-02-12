@@ -14,6 +14,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { UserSettings } from "@/components/UserSettings";
 import ProfileSettings from "@/components/ProfileSettings";
 
 interface Profile {
@@ -39,6 +40,7 @@ const UserMenu = ({ currentUserProfile, showProfileSettings, setShowProfileSetti
       {currentUserProfile?.username && (
         <span className="text-sm font-medium">{currentUserProfile.username}</span>
       )}
+      <UserSettings />
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon">
