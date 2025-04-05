@@ -16,6 +16,8 @@ import {
 } from "@/components/ui/sheet";
 import { UserSettings } from "@/components/UserSettings";
 import ProfileSettings from "@/components/ProfileSettings";
+import { useAuthContext } from "@/contexts/AuthContext";
+import { useUser } from "@clerk/clerk-react";
 
 interface Profile {
   id: string;
@@ -35,10 +37,13 @@ interface UserMenuProps {
 }
 
 const UserMenu = ({ currentUserProfile, showProfileSettings, setShowProfileSettings, onLogout }: UserMenuProps) => {
+  const { user } = useUser();
+  const { signOut } = useAuthContext();
+
   return (
     <div className="flex items-center gap-2">
-      {currentUserProfile?.username && (
-        <span className="text-sm font-medium">{currentUserProfile.username}</span>
+      {user?.username && (
+        <span className="text-sm font-medium">{user.username}</span>
       )}
       <UserSettings />
       <DropdownMenu>
@@ -70,7 +75,7 @@ const UserMenu = ({ currentUserProfile, showProfileSettings, setShowProfileSetti
               )}
             </SheetContent>
           </Sheet>
-          <DropdownMenuItem onClick={onLogout}>
+          <DropdownMenuItem onClick={signOut}>
             <LogOut className="h-4 w-4 mr-2" />
             Logout
           </DropdownMenuItem>

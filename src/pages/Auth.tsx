@@ -1,7 +1,13 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
+import { 
+  useSignIn, 
+  useSignUp, 
+  SignInButton, 
+  SignUpButton, 
+  useClerk 
+} from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
@@ -16,6 +22,9 @@ const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { isLoaded: isSignInLoaded, signIn } = useSignIn();
+  const { isLoaded: isSignUpLoaded, signUp } = useSignUp();
+  const { signOut } = useClerk();
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,28 +32,56 @@ const Auth = () => {
 
     try {
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
-          email,
+        if (!isSignUpLoaded) return;
+        
+        const result = await signUp.create({
+          emailAddress: email,
           password,
         });
-        if (error) throw error;
-        toast({
-          title: "Success!",
-          description: "Please check your email to verify your account.",
-        });
+        
+        if (result.status === "complete") {
+          await signIn.create({
+            identifier: email,
+            password,
+          });
+          toast({
+            title: "Success!",
+            description: "Account created successfully",
+          });
+          navigate(-1);
+        } else {
+          toast({
+            title: "Verification needed",
+            description: "Please check your email to verify your account.",
+          });
+        }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email,
+        if (!isSignInLoaded) return;
+        
+        const result = await signIn.create({
+          identifier: email,
           password,
         });
-        if (error) throw error;
-        navigate(-1);
+        
+        if (result.status === "complete") {
+          toast({
+            title: "Success!",
+            description: "Signed in successfully",
+          });
+          navigate(-1);
+        } else {
+          toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Failed to sign in. Please check your credentials.",
+          });
+        }
       }
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: error.message || "Authentication failed",
       });
     } finally {
       setLoading(false);
@@ -54,18 +91,19 @@ const Auth = () => {
   const handleOAuthSignIn = async (provider: 'google' | 'github') => {
     try {
       setLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: `${window.location.origin}/auth`,
-        },
+      
+      if (!isSignInLoaded) return;
+      
+      await signIn.authenticateWithRedirect({
+        strategy: provider,
+        redirectUrl: "/auth",
+        redirectUrlComplete: "/"
       });
-      if (error) throw error;
     } catch (error: any) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: error.message || "Authentication failed",
       });
       setLoading(false);
     }
