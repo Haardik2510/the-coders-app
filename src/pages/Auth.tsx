@@ -88,20 +88,23 @@ const Auth = () => {
           />
         ))}
       </div>
-      <style jsx>{`
-        @keyframes float0 {
-          0% { transform: translate(0, 0) rotate(0deg); }
-          100% { transform: translate(100px, -100px) rotate(360deg); }
-        }
-        @keyframes float1 {
-          0% { transform: translate(0, 0) rotate(0deg); }
-          100% { transform: translate(-100px, -100px) rotate(-360deg); }
-        }
-        @keyframes float2 {
-          0% { transform: translate(0, 0) rotate(0deg); }
-          100% { transform: translate(50px, -150px) rotate(180deg); }
-        }
-      `}</style>
+      
+      <style>
+        {`
+          @keyframes float0 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(100px, -100px) rotate(360deg); }
+          }
+          @keyframes float1 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(-100px, -100px) rotate(-360deg); }
+          }
+          @keyframes float2 {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(50px, -150px) rotate(180deg); }
+          }
+        `}
+      </style>
       
       <Card className="w-full max-w-md gradient-card border-none animate-fade-up">
         <CardHeader className="text-center">
