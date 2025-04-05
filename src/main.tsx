@@ -6,8 +6,7 @@ import App from "./App";
 import "./index.css";
 
 // Your Clerk publishable key
-// Replace this with your actual Clerk publishable key from the Clerk dashboard
-const CLERK_PUBLISHABLE_KEY = "pk_test_your-clerk-publishable-key";
+const CLERK_PUBLISHABLE_KEY = "pk_test_YW11c2VkLWFzcC0yMy5jbGVyay5hY2NvdW50cy5kZXYk";
 
 if (!CLERK_PUBLISHABLE_KEY) {
   throw new Error("Missing Clerk Publishable Key");
