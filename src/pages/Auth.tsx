@@ -15,6 +15,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { Github, Mail, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
+// Define valid OAuth strategies according to Clerk's types
+type OAuthProvider = "oauth_google" | "oauth_github";
+
 const Auth = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -88,7 +91,7 @@ const Auth = () => {
     }
   };
 
-  const handleOAuthSignIn = async (provider: 'google' | 'github') => {
+  const handleOAuthSignIn = async (provider: OAuthProvider) => {
     try {
       setLoading(true);
       
@@ -155,7 +158,7 @@ const Auth = () => {
           <div className="grid grid-cols-2 gap-4">
             <Button 
               className="w-full animated-button animated-button-primary"
-              onClick={() => handleOAuthSignIn('google')}
+              onClick={() => handleOAuthSignIn("oauth_google")}
               disabled={loading}
             >
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (
@@ -182,7 +185,7 @@ const Auth = () => {
             </Button>
             <Button 
               className="w-full animated-button animated-button-secondary"
-              onClick={() => handleOAuthSignIn('github')}
+              onClick={() => handleOAuthSignIn("oauth_github")}
               disabled={loading}
             >
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Github className="mr-2 h-4 w-4" />}
