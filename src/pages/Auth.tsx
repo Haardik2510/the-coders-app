@@ -70,18 +70,18 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-soft-purple/50 to-white flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <h1 className="text-2xl font-bold text-center">
+    <div className="min-h-screen bg-gradient-to-b from-[#0c1220] to-[#1e293b] flex items-center justify-center p-4">
+      <Card className="w-full max-w-md gradient-card border-none">
+        <CardHeader className="text-center">
+          <h1 className="text-2xl font-bold text-white">
             {isSignUp ? "Create Account" : "Welcome Back"}
           </h1>
+          <p className="text-sm text-gray-400">CodersApp by KRMU</p>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <Button 
-              className="w-full" 
-              variant="outline"
+              className="w-full animated-button animated-button-primary"
               onClick={() => handleOAuthSignIn('google')}
             >
               <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -105,8 +105,7 @@ const Auth = () => {
               Google
             </Button>
             <Button 
-              className="w-full" 
-              variant="outline"
+              className="w-full animated-button animated-button-secondary"
               onClick={() => handleOAuthSignIn('github')}
             >
               <Github className="mr-2 h-4 w-4" />
@@ -119,7 +118,7 @@ const Auth = () => {
               <Separator className="w-full" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
+              <span className="bg-[#0c1220] px-2 text-gray-400">
                 Or continue with email
               </span>
             </div>
@@ -133,6 +132,7 @@ const Auth = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
               />
             </div>
             <div className="space-y-2">
@@ -142,9 +142,10 @@ const Auth = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                className="bg-white/5 border-white/10 text-white placeholder:text-gray-400"
               />
             </div>
-            <Button className="w-full" type="submit" disabled={loading}>
+            <Button className="w-full animated-button animated-button-primary" type="submit" disabled={loading}>
               <Mail className="mr-2 h-4 w-4" />
               {loading
                 ? "Loading..."
@@ -157,7 +158,7 @@ const Auth = () => {
         <CardFooter className="flex flex-col space-y-2">
           <Button
             variant="ghost"
-            className="w-full"
+            className="w-full text-gray-300 hover:text-white hover:bg-white/5"
             onClick={() => setIsSignUp(!isSignUp)}
           >
             {isSignUp

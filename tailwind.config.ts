@@ -26,11 +26,11 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#9b87f5",
+          DEFAULT: "#4e6ef2", // blue
           foreground: "#ffffff",
         },
         secondary: {
-          DEFAULT: "#7E69AB",
+          DEFAULT: "#ea384c", // red
           foreground: "#ffffff",
         },
         soft: {
@@ -40,6 +40,7 @@ export default {
           purple: "#E5DEFF",
           pink: "#FFDEE2",
           blue: "#D3E4FD",
+          red: "#FFE5E8",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
@@ -68,6 +69,14 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        "accordion-down": {
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
+        },
+        "accordion-up": {
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
         "fade-up": {
           "0%": {
             opacity: "0",
@@ -88,10 +97,42 @@ export default {
             transform: "translateY(0)",
           },
         },
+        "pulse-blue": {
+          "0%, 100%": {
+            "box-shadow": "0 0 0 0 rgba(78, 110, 242, 0.4)",
+          },
+          "50%": {
+            "box-shadow": "0 0 0 10px rgba(78, 110, 242, 0)",
+          },
+        },
+        "pulse-red": {
+          "0%, 100%": {
+            "box-shadow": "0 0 0 0 rgba(234, 56, 76, 0.4)",
+          },
+          "50%": {
+            "box-shadow": "0 0 0 10px rgba(234, 56, 76, 0)",
+          },
+        },
+        "float": {
+          "0%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+          "100%": { transform: "translateY(0)" },
+        },
       },
       animation: {
+        "accordion-down": "accordion-down 0.2s ease-out",
+        "accordion-up": "accordion-up 0.2s ease-out",
         "fade-up": "fade-up 0.5s ease-out",
         "fade-down": "fade-down 0.5s ease-out",
+        "pulse-blue": "pulse-blue 2s infinite",
+        "pulse-red": "pulse-red 2s infinite",
+        "float": "float 3s ease-in-out infinite",
+      },
+      backgroundImage: {
+        "gradient-primary": "linear-gradient(135deg, #4e6ef2 0%, #72a1f8 100%)",
+        "gradient-secondary": "linear-gradient(135deg, #ea384c 0%, #ff7085 100%)",
+        "gradient-blend": "linear-gradient(135deg, #4e6ef2 0%, #ea384c 100%)",
+        "gradient-dark": "linear-gradient(180deg, #1a1a1a 0%, #333333 100%)",
       },
     },
   },
