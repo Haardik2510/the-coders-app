@@ -16,7 +16,7 @@ import { Github, Mail, Loader2 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
 
 // Define valid OAuth strategies according to Clerk's types
-type OAuthProvider = "oauth_google" | "oauth_github";
+type OAuthStrategy = "oauth_google" | "oauth_github" | "oauth_facebook" | "oauth_discord" | "oauth_twitter" | "oauth_twitch" | "oauth_linkedin" | "oauth_microsoft" | "oauth_apple";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -91,7 +91,7 @@ const Auth = () => {
     }
   };
 
-  const handleOAuthSignIn = async (provider: OAuthProvider) => {
+  const handleOAuthSignIn = async (provider: OAuthStrategy) => {
     try {
       setLoading(true);
       
