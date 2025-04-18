@@ -81,7 +81,6 @@
     background: linear-gradient(135deg, rgba(78, 110, 242, 0.05) 0%, rgba(234, 56, 76, 0.05) 100%);
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);
-    animation: gradient-fade 3s ease infinite alternate;
   }
   
   .gradient-card:hover {

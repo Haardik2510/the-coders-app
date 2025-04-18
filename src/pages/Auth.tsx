@@ -8,6 +8,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Mail, Loader2, KeyRound } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import ReCAPTCHA from "react-google-recaptcha";
+import ParticleBackground from "@/components/ParticleBackground";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -83,8 +84,10 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#0c1220] to-[#1e293b] flex items-center justify-center p-4">
-      <Card className="w-full max-w-md gradient-card border-none animate-fade-up">
+    <div className="min-h-screen flex items-center justify-center p-4 relative">
+      <ParticleBackground />
+      
+      <Card className="w-full max-w-md gradient-card border-none animate-fade-up relative z-10">
         <CardHeader className="text-center">
           <h1 className="text-2xl font-bold text-white">
             {isSignUp ? "Create Account" : "Welcome Back"}
