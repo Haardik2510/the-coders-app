@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { Mail, Loader2, KeyRound } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
 import { supabase } from "@/integrations/supabase/client";
 import ReCAPTCHA from "react-google-recaptcha";
 
@@ -85,50 +84,6 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0c1220] to-[#1e293b] flex items-center justify-center p-4">
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <svg
-          className="absolute inset-0 w-full h-full opacity-30"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <filter id="turbulence" x="0" y="0" width="100%" height="100%">
-            <feTurbulence
-              type="fractalNoise"
-              baseFrequency="0.01 0.01"
-              numOctaves="3"
-              seed="3"
-              stitchTiles="stitch"
-              result="turbulence"
-            >
-              <animate
-                attributeName="baseFrequency"
-                from="0.01 0.01"
-                to="0.02 0.02"
-                dur="30s"
-                repeatCount="indefinite"
-              />
-            </feTurbulence>
-            <feDisplacementMap
-              in="SourceGraphic"
-              in2="turbulence"
-              scale="50"
-              xChannelSelector="R"
-              yChannelSelector="G"
-            />
-          </filter>
-          <rect
-            width="100%"
-            height="100%"
-            fill="url(#gradient)"
-            filter="url(#turbulence)"
-          />
-          <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#4e6ef2" />
-            <stop offset="50%" stopColor="#9b87f5" />
-            <stop offset="100%" stopColor="#ea384c" />
-          </linearGradient>
-        </svg>
-      </div>
-      
       <Card className="w-full max-w-md gradient-card border-none animate-fade-up">
         <CardHeader className="text-center">
           <h1 className="text-2xl font-bold text-white">
@@ -139,9 +94,11 @@ const Auth = () => {
         <CardContent className="space-y-4">
           <form onSubmit={handleAuth} className="space-y-4">
             <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium text-white">Email</label>
               <Input
+                id="email"
                 type="email"
-                placeholder="Email"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -149,9 +106,11 @@ const Auth = () => {
               />
             </div>
             <div className="space-y-2">
+              <label htmlFor="password" className="text-sm font-medium text-white">Password</label>
               <Input
+                id="password"
                 type="password"
-                placeholder="Password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -161,7 +120,7 @@ const Auth = () => {
             
             <div className="flex justify-center my-4">
               <ReCAPTCHA
-                sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
+                sitekey="6LcxrGgpAAAAAIhT2XlD-YZTu5tZNUqzuNxCRFm-"
                 onChange={handleCaptchaChange}
                 theme="dark"
               />
@@ -174,8 +133,10 @@ const Auth = () => {
             >
               {loading ? (
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
+              ) : isSignUp ? (
                 <Mail className="mr-2 h-4 w-4" />
+              ) : (
+                <KeyRound className="mr-2 h-4 w-4" />
               )}
               {loading
                 ? "Processing..."
