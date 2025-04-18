@@ -3,7 +3,15 @@ import { MessageCircle, Code2, Award, Home, Users } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const MainNav = () => {
-  const location = useLocation();
+  let location;
+  
+  try {
+    location = useLocation();
+  } catch (error) {
+    // If useLocation throws an error, we're not in a Router context
+    // Provide a fallback location object
+    location = { pathname: "/" };
+  }
   
   const navItems = [
     { icon: Home, label: "Home", path: "/" },
