@@ -1,5 +1,5 @@
 
-import { MessageCircle, Code2, Award, Home } from "lucide-react";
+import { MessageCircle, Code2, Award, Home, Users } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 const MainNav = () => {
@@ -9,6 +9,7 @@ const MainNav = () => {
     { icon: Home, label: "Home", path: "/" },
     { icon: MessageCircle, label: "Chat", path: "/chat" },
     { icon: Code2, label: "Solve", path: "/solve" },
+    { icon: Users, label: "Community", path: "/community" },
     { icon: Award, label: "Achievements", path: "/achievements" },
   ];
 

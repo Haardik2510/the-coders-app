@@ -11,6 +11,7 @@ import Chat from "./pages/Chat";
 import Solve from "./pages/Solve";
 import Achievements from "./pages/Achievements";
 import Auth from "./pages/Auth";
+import Community from "./pages/Community";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -33,6 +34,7 @@ const App = () => {
               <Route path="/chat" element={<Chat />} />
               <Route path="/solve" element={<Solve />} />
               <Route path="/achievements" element={<Achievements />} />
+              <Route path="/community" element={<Community />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

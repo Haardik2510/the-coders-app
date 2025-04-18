@@ -1,6 +1,6 @@
 
 import MainNav from "@/components/MainNav";
-import { MessageCircle, Code2, Award } from "lucide-react";
+import { MessageCircle, Code2, Award, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -54,38 +54,42 @@ const Index = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <div 
                 onClick={() => handleCardClick('/chat')}
-                className="gradient-card p-6 transition-all duration-500 ease-in-out group hover:shadow-2xl cursor-pointer"
+                className="gradient-card p-6 transition-all duration-500 ease-in-out group hover:shadow-2xl cursor-pointer overflow-hidden"
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  {[...Array(20)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute w-2 h-2 rounded-full"
-                      style={{
-                        backgroundColor: i % 2 === 0 ? '#4e6ef2' : '#ea384c',
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                        animation: `float${i % 3} ${2 + Math.random() * 3}s linear infinite`
-                      }}
-                    />
-                  ))}
+                  <svg className="w-full h-full">
+                    <filter id="turbulence1" x="0" y="0" width="100%" height="100%">
+                      <feTurbulence
+                        type="fractalNoise"
+                        baseFrequency="0.01 0.01"
+                        numOctaves="2"
+                        seed="1"
+                        stitchTiles="stitch"
+                        result="turbulence"
+                      >
+                        <animate
+                          attributeName="baseFrequency"
+                          from="0.01 0.01"
+                          to="0.02 0.02"
+                          dur="20s"
+                          repeatCount="indefinite"
+                        />
+                      </feTurbulence>
+                      <feDisplacementMap
+                        in="SourceGraphic"
+                        in2="turbulence"
+                        scale="30"
+                        xChannelSelector="R"
+                        yChannelSelector="G"
+                      />
+                    </filter>
+                    <rect width="100%" height="100%" fill="url(#cardGradient1)" filter="url(#turbulence1)" />
+                    <linearGradient id="cardGradient1" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#4e6ef2" />
+                      <stop offset="100%" stopColor="#7E69AB" />
+                    </linearGradient>
+                  </svg>
                 </div>
-                <style>
-                  {`
-                    @keyframes float0 {
-                      0% { transform: translate(0, 0) rotate(0deg); }
-                      100% { transform: translate(100px, -100px) rotate(360deg); }
-                    }
-                    @keyframes float1 {
-                      0% { transform: translate(0, 0) rotate(0deg); }
-                      100% { transform: translate(-100px, -100px) rotate(-360deg); }
-                    }
-                    @keyframes float2 {
-                      0% { transform: translate(0, 0) rotate(0deg); }
-                      100% { transform: translate(50px, -150px) rotate(180deg); }
-                    }
-                  `}
-                </style>
                 <div className="relative z-10">
                   <MessageCircle className="w-8 h-8 text-primary mb-4 group-hover:text-secondary transition-colors duration-500" />
                   <h2 className="text-xl font-semibold mb-2 text-white transition-colors duration-500">Chat with Developers</h2>
@@ -97,21 +101,41 @@ const Index = () => {
               
               <div 
                 onClick={() => handleCardClick('/solve')}
-                className="gradient-card p-6 transition-all duration-500 ease-in-out group hover:shadow-2xl cursor-pointer"
+                className="gradient-card p-6 transition-all duration-500 ease-in-out group hover:shadow-2xl cursor-pointer overflow-hidden"
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  {[...Array(20)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute w-2 h-2 rounded-full"
-                      style={{
-                        backgroundColor: i % 2 === 0 ? '#4e6ef2' : '#ea384c',
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                        animation: `float${i % 3} ${2 + Math.random() * 3}s linear infinite`
-                      }}
-                    />
-                  ))}
+                  <svg className="w-full h-full">
+                    <filter id="turbulence2" x="0" y="0" width="100%" height="100%">
+                      <feTurbulence
+                        type="fractalNoise"
+                        baseFrequency="0.01 0.01"
+                        numOctaves="2"
+                        seed="2"
+                        stitchTiles="stitch"
+                        result="turbulence"
+                      >
+                        <animate
+                          attributeName="baseFrequency"
+                          from="0.01 0.01"
+                          to="0.02 0.02"
+                          dur="25s"
+                          repeatCount="indefinite"
+                        />
+                      </feTurbulence>
+                      <feDisplacementMap
+                        in="SourceGraphic"
+                        in2="turbulence"
+                        scale="30"
+                        xChannelSelector="R"
+                        yChannelSelector="G"
+                      />
+                    </filter>
+                    <rect width="100%" height="100%" fill="url(#cardGradient2)" filter="url(#turbulence2)" />
+                    <linearGradient id="cardGradient2" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#9b87f5" />
+                      <stop offset="100%" stopColor="#D946EF" />
+                    </linearGradient>
+                  </svg>
                 </div>
                 <div className="relative z-10">
                   <Code2 className="w-8 h-8 text-primary mb-4 group-hover:text-secondary transition-colors duration-500" />
@@ -124,21 +148,41 @@ const Index = () => {
               
               <div 
                 onClick={() => handleCardClick('/achievements')}
-                className="gradient-card p-6 transition-all duration-500 ease-in-out group hover:shadow-2xl cursor-pointer"
+                className="gradient-card p-6 transition-all duration-500 ease-in-out group hover:shadow-2xl cursor-pointer overflow-hidden"
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  {[...Array(20)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute w-2 h-2 rounded-full"
-                      style={{
-                        backgroundColor: i % 2 === 0 ? '#4e6ef2' : '#ea384c',
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                        animation: `float${i % 3} ${2 + Math.random() * 3}s linear infinite`
-                      }}
-                    />
-                  ))}
+                  <svg className="w-full h-full">
+                    <filter id="turbulence3" x="0" y="0" width="100%" height="100%">
+                      <feTurbulence
+                        type="fractalNoise"
+                        baseFrequency="0.01 0.01"
+                        numOctaves="2"
+                        seed="3"
+                        stitchTiles="stitch"
+                        result="turbulence"
+                      >
+                        <animate
+                          attributeName="baseFrequency"
+                          from="0.01 0.01"
+                          to="0.02 0.02"
+                          dur="22s"
+                          repeatCount="indefinite"
+                        />
+                      </feTurbulence>
+                      <feDisplacementMap
+                        in="SourceGraphic"
+                        in2="turbulence"
+                        scale="30"
+                        xChannelSelector="R"
+                        yChannelSelector="G"
+                      />
+                    </filter>
+                    <rect width="100%" height="100%" fill="url(#cardGradient3)" filter="url(#turbulence3)" />
+                    <linearGradient id="cardGradient3" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#F97316" />
+                      <stop offset="100%" stopColor="#ea384c" />
+                    </linearGradient>
+                  </svg>
                 </div>
                 <div className="relative z-10">
                   <Award className="w-8 h-8 text-primary mb-4 group-hover:text-secondary transition-colors duration-500" />
@@ -150,25 +194,45 @@ const Index = () => {
               </div>
               
               <div 
-                onClick={() => handleCardClick('/chat')}
-                className="gradient-card p-6 transition-all duration-500 ease-in-out group hover:shadow-2xl cursor-pointer"
+                onClick={() => handleCardClick('/community')}
+                className="gradient-card p-6 transition-all duration-500 ease-in-out group hover:shadow-2xl cursor-pointer overflow-hidden"
               >
                 <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                  {[...Array(20)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute w-2 h-2 rounded-full"
-                      style={{
-                        backgroundColor: i % 2 === 0 ? '#4e6ef2' : '#ea384c',
-                        left: `${Math.random() * 100}%`,
-                        top: `${Math.random() * 100}%`,
-                        animation: `float${i % 3} ${2 + Math.random() * 3}s linear infinite`
-                      }}
-                    />
-                  ))}
+                  <svg className="w-full h-full">
+                    <filter id="turbulence4" x="0" y="0" width="100%" height="100%">
+                      <feTurbulence
+                        type="fractalNoise"
+                        baseFrequency="0.01 0.01"
+                        numOctaves="2"
+                        seed="4"
+                        stitchTiles="stitch"
+                        result="turbulence"
+                      >
+                        <animate
+                          attributeName="baseFrequency"
+                          from="0.01 0.01"
+                          to="0.02 0.02"
+                          dur="28s"
+                          repeatCount="indefinite"
+                        />
+                      </feTurbulence>
+                      <feDisplacementMap
+                        in="SourceGraphic"
+                        in2="turbulence"
+                        scale="30"
+                        xChannelSelector="R"
+                        yChannelSelector="G"
+                      />
+                    </filter>
+                    <rect width="100%" height="100%" fill="url(#cardGradient4)" filter="url(#turbulence4)" />
+                    <linearGradient id="cardGradient4" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#1EAEDB" />
+                      <stop offset="100%" stopColor="#4e6ef2" />
+                    </linearGradient>
+                  </svg>
                 </div>
                 <div className="relative z-10">
-                  <MessageCircle className="w-8 h-8 text-primary mb-4 group-hover:text-secondary transition-colors duration-500" />
+                  <Users className="w-8 h-8 text-primary mb-4 group-hover:text-secondary transition-colors duration-500" />
                   <h2 className="text-xl font-semibold mb-2 text-white transition-colors duration-500">Join the Community</h2>
                   <p className="text-gray-300 transition-colors duration-500">
                     Be part of an inclusive coding community
