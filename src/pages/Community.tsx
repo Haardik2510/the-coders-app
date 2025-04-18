@@ -1,19 +1,12 @@
-
+import React from 'react';
 import MainNav from "@/components/MainNav";
-import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
-import { Search, Users, Heart, MessageSquare, Share2 } from "lucide-react";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import CommunityHeader from "@/components/community/CommunityHeader";
+import PostCard from "@/components/community/PostCard";
+import GroupCard from "@/components/community/GroupCard";
 
 const Community = () => {
   const dummyPosts = [
@@ -85,23 +78,7 @@ const Community = () => {
         <MainNav />
         <main className="flex-1 p-6 animate-fade-up">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl font-bold mb-6 text-white">
-              Community <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4e6ef2] to-[#ea384c]">Hub</span>
-            </h1>
-            
-            <div className="flex mb-6 items-center">
-              <div className="relative flex-1">
-                <Search className="absolute left-2 top-3 h-4 w-4 text-gray-400" />
-                <Input 
-                  placeholder="Search the community..." 
-                  className="pl-8 bg-white/5 border-white/10 text-white"
-                />
-              </div>
-              <Button className="ml-4 animated-button animated-button-primary">
-                <Users className="mr-2 h-4 w-4" />
-                Join Groups
-              </Button>
-            </div>
+            <CommunityHeader />
             
             <Tabs defaultValue="feed" className="mb-8">
               <TabsList className="bg-white/5">
@@ -125,106 +102,13 @@ const Community = () => {
                 </Card>
                 
                 {dummyPosts.map(post => (
-                  <Card key={post.id} className="gradient-card border-none overflow-hidden">
-                    <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                      <Avatar>
-                        <AvatarImage src={post.user.avatar} />
-                        <AvatarFallback>{post.user.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <CardTitle className="text-white text-base">{post.user.name}</CardTitle>
-                        <CardDescription className="text-gray-400">{post.user.handle}</CardDescription>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pb-2 text-white">
-                      <p>{post.content}</p>
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        {post.tags.map(tag => (
-                          <Badge key={tag} variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-none">
-                            #{tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="flex justify-between text-gray-400">
-                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-red-400">
-                        <Heart className="h-4 w-4 mr-1" />
-                        {post.likes}
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-blue-400">
-                        <MessageSquare className="h-4 w-4 mr-1" />
-                        {post.comments}
-                      </Button>
-                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-green-400">
-                        <Share2 className="h-4 w-4 mr-1" />
-                        Share
-                      </Button>
-                    </CardFooter>
-                  </Card>
+                  <PostCard key={post.id} post={post} />
                 ))}
               </TabsContent>
               
               <TabsContent value="groups" className="grid md:grid-cols-2 gap-4 mt-4">
                 {dummyGroups.map(group => (
-                  <Card key={group.id} className="gradient-card border-none overflow-hidden">
-                    <div className="absolute inset-0 opacity-30">
-                      <svg className="w-full h-full">
-                        <filter id={`turbulence-group-${group.id}`} x="0" y="0" width="100%" height="100%">
-                          <feTurbulence
-                            type="fractalNoise"
-                            baseFrequency="0.01 0.01"
-                            numOctaves="2"
-                            seed={group.id}
-                            stitchTiles="stitch"
-                            result="turbulence"
-                          >
-                            <animate
-                              attributeName="baseFrequency"
-                              from="0.01 0.01"
-                              to="0.02 0.02"
-                              dur="30s"
-                              repeatCount="indefinite"
-                            />
-                          </feTurbulence>
-                          <feDisplacementMap
-                            in="SourceGraphic"
-                            in2="turbulence"
-                            scale="20"
-                            xChannelSelector="R"
-                            yChannelSelector="G"
-                          />
-                        </filter>
-                        <rect width="100%" height="100%" fill={`url(#group-gradient-${group.id})`} filter={`url(#turbulence-group-${group.id})`} />
-                        <linearGradient id={`group-gradient-${group.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#4e6ef2" />
-                          <stop offset="100%" stopColor={group.id === 1 ? "#9b87f5" : group.id === 2 ? "#D946EF" : "#ea384c"} />
-                        </linearGradient>
-                      </svg>
-                    </div>
-                    
-                    <CardHeader className="relative z-10">
-                      <CardTitle className="text-white">{group.name}</CardTitle>
-                      <CardDescription className="text-gray-300">
-                        <Users className="inline h-4 w-4 mr-1" />
-                        {group.members.toLocaleString()} members
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="relative z-10 pb-2 text-white">
-                      <p className="text-gray-300">{group.description}</p>
-                      <div className="flex flex-wrap gap-2 mt-3">
-                        {group.tags.map(tag => (
-                          <Badge key={tag} variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-none">
-                            #{tag}
-                          </Badge>
-                        ))}
-                      </div>
-                    </CardContent>
-                    <CardFooter className="relative z-10">
-                      <Button className="w-full animated-button animated-button-primary">
-                        Join Group
-                      </Button>
-                    </CardFooter>
-                  </Card>
+                  <GroupCard key={group.id} group={group} />
                 ))}
               </TabsContent>
               
