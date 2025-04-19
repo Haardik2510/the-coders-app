@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Users } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
@@ -17,7 +16,7 @@ interface GroupCardProps {
 
 const GroupCard = ({ group }: GroupCardProps) => {
   return (
-    <Card className="gradient-card border-none overflow-hidden">
+    <Card className="gradient-card border-none bg-[#1a1f2c] overflow-hidden">
       <div className="absolute inset-0 opacity-30">
         <svg className="w-full h-full">
           <filter id={`turbulence-group-${group.id}`} x="0" y="0" width="100%" height="100%">

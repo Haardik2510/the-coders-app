@@ -4,9 +4,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Calendar, Users, Globe, Sparkles } from "lucide-react";
 import CommunityHeader from "@/components/community/CommunityHeader";
 import PostCard from "@/components/community/PostCard";
 import GroupCard from "@/components/community/GroupCard";
+import EventCard from "@/components/community/EventCard";
+import DiscoverCard from "@/components/community/DiscoverCard";
 
 const Community = () => {
   const dummyPosts = [
@@ -72,6 +75,46 @@ const Community = () => {
     }
   ];
 
+  const dummyEvents = [
+    {
+      id: 1,
+      title: "React Summit 2025",
+      date: "May 15, 2025",
+      time: "9:00 AM PST",
+      location: "San Francisco, CA",
+      description: "Join the biggest React conference in North America",
+      attendees: 342,
+      type: "Conference"
+    },
+    {
+      id: 2,
+      title: "JavaScript Meetup",
+      date: "April 25, 2025",
+      time: "6:30 PM EST",
+      location: "Virtual",
+      description: "Weekly JavaScript community meetup and coding session",
+      attendees: 89,
+      type: "Meetup"
+    }
+  ];
+
+  const dummyDiscoveries = [
+    {
+      id: 1,
+      title: "AI & Machine Learning",
+      description: "Connect with AI enthusiasts and stay updated with the latest in machine learning",
+      members: 1523,
+      trending: true
+    },
+    {
+      id: 2,
+      title: "Web3 Developers",
+      description: "Explore blockchain development and connect with Web3 developers",
+      members: 892,
+      trending: true
+    }
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0c1220] to-[#1e293b]">
       <div className="flex min-h-screen">
@@ -81,7 +124,7 @@ const Community = () => {
             <CommunityHeader />
             
             <Tabs defaultValue="feed" className="mb-8">
-              <TabsList className="bg-white/5">
+              <TabsList className="bg-[#1a1f2c] border border-white/10">
                 <TabsTrigger value="feed">Feed</TabsTrigger>
                 <TabsTrigger value="groups">Groups</TabsTrigger>
                 <TabsTrigger value="events">Events</TabsTrigger>
@@ -89,11 +132,11 @@ const Community = () => {
               </TabsList>
               
               <TabsContent value="feed" className="space-y-4 mt-4">
-                <Card className="gradient-card border-none p-4">
+                <Card className="gradient-card border-none bg-[#1a1f2c] p-4">
                   <CardContent className="p-0">
                     <Input 
                       placeholder="Share something with the community..." 
-                      className="bg-white/5 border-white/10 text-white mb-4"
+                      className="bg-[#0d1117] border-white/10 text-white mb-4"
                     />
                     <div className="flex justify-end">
                       <Button>Post</Button>
@@ -112,24 +155,30 @@ const Community = () => {
                 ))}
               </TabsContent>
               
-              <TabsContent value="events" className="mt-4">
-                <Card className="gradient-card border-none">
-                  <CardContent className="pt-6">
-                    <div className="text-center">
-                      <p className="text-gray-300">Events feature coming soon...</p>
-                      <p className="text-sm text-gray-400 mt-4">Stay tuned for upcoming developer events and meetups</p>
-                    </div>
+              <TabsContent value="events" className="grid md:grid-cols-2 gap-4 mt-4">
+                {dummyEvents.map(event => (
+                  <EventCard key={event.id} event={event} />
+                ))}
+                <Card className="gradient-card border-none bg-[#1a1f2c] p-6 col-span-2">
+                  <CardContent className="flex items-center justify-center space-x-2">
+                    <Button className="animated-button animated-button-primary">
+                      <Calendar className="mr-2 h-4 w-4" />
+                      Create Event
+                    </Button>
                   </CardContent>
                 </Card>
               </TabsContent>
               
-              <TabsContent value="discover" className="mt-4">
-                <Card className="gradient-card border-none">
-                  <CardContent className="pt-6">
-                    <div className="text-center">
-                      <p className="text-gray-300">Discover feature coming soon...</p>
-                      <p className="text-sm text-gray-400 mt-4">Find new developers and communities based on your interests</p>
-                    </div>
+              <TabsContent value="discover" className="grid md:grid-cols-2 gap-4 mt-4">
+                {dummyDiscoveries.map(item => (
+                  <DiscoverCard key={item.id} discovery={item} />
+                ))}
+                <Card className="gradient-card border-none bg-[#1a1f2c] p-6 col-span-2">
+                  <CardContent className="flex items-center justify-center">
+                    <Button className="animated-button animated-button-primary">
+                      <Globe className="mr-2 h-4 w-4" />
+                      Explore More Communities
+                    </Button>
                   </CardContent>
                 </Card>
               </TabsContent>
