@@ -17,7 +17,7 @@ interface DiscoverCardProps {
 
 const DiscoverCard = ({ discovery }: DiscoverCardProps) => {
   return (
-    <Card className="gradient-card border-none bg-[#1a1f2c]">
+    <Card className="border-none bg-black text-white">
       <CardHeader>
         <div className="flex justify-between items-start">
           <CardTitle className="text-xl text-white">{discovery.title}</CardTitle>

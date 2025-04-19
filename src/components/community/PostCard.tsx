@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Heart, MessageSquare, Share2 } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
@@ -22,7 +23,7 @@ interface PostCardProps {
 
 const PostCard = ({ post }: PostCardProps) => {
   return (
-    <Card className="gradient-card border-none bg-[#1a1f2c] overflow-hidden">
+    <Card className="border-none bg-black text-white">
       <CardHeader className="flex flex-row items-center gap-4 pb-2">
         <Avatar>
           <AvatarImage src={post.user.avatar} />

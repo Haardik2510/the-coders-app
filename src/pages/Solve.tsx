@@ -28,44 +28,9 @@ const Solve = () => {
                 {challenges.map((challenge) => (
                   <Card 
                     key={challenge.id}
-                    className="border-none overflow-hidden gradient-card hover:shadow-lg transition-all duration-300"
+                    className="border-none bg-black text-white rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl"
                     onClick={() => setSelectedLevel(challenge.id)}
                   >
-                    <div className="absolute inset-0 opacity-0 hover:opacity-100 transition-opacity duration-500">
-                      <svg className="w-full h-full">
-                        <filter id={`turbulence-${challenge.id}`} x="0" y="0" width="100%" height="100%">
-                          <feTurbulence
-                            type="fractalNoise"
-                            baseFrequency="0.01 0.01"
-                            numOctaves="2"
-                            seed={challenge.id === "easy" ? "1" : challenge.id === "medium" ? "2" : challenge.id === "hard" ? "3" : "4"}
-                            stitchTiles="stitch"
-                            result="turbulence"
-                          >
-                            <animate
-                              attributeName="baseFrequency"
-                              from="0.01 0.01"
-                              to="0.02 0.02"
-                              dur="20s"
-                              repeatCount="indefinite"
-                            />
-                          </feTurbulence>
-                          <feDisplacementMap
-                            in="SourceGraphic"
-                            in2="turbulence"
-                            scale="30"
-                            xChannelSelector="R"
-                            yChannelSelector="G"
-                          />
-                        </filter>
-                        <rect width="100%" height="100%" fill={`url(#gradient-${challenge.id})`} filter={`url(#turbulence-${challenge.id})`} />
-                        <linearGradient id={`gradient-${challenge.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor={challenge.color} />
-                          <stop offset="100%" stopColor={challenge.id === "easy" ? "#7E69AB" : challenge.id === "medium" ? "#D946EF" : challenge.id === "hard" ? "#F97316" : "#4e6ef2"} />
-                        </linearGradient>
-                      </svg>
-                    </div>
-                    
                     <CardHeader className="relative z-10">
                       <div className="p-2 rounded-full bg-white/10 w-12 h-12 flex items-center justify-center mb-2">
                         <challenge.icon className="w-6 h-6 text-white" />
@@ -85,42 +50,7 @@ const Solve = () => {
                 ))}
               </div>
             ) : (
-              <div className="gradient-card p-6 transition-all duration-300 hover:shadow-2xl overflow-hidden">
-                <div className="absolute inset-0">
-                  <svg className="w-full h-full">
-                    <filter id="turbulence-selected" x="0" y="0" width="100%" height="100%">
-                      <feTurbulence
-                        type="fractalNoise"
-                        baseFrequency="0.01 0.01"
-                        numOctaves="2"
-                        seed="5"
-                        stitchTiles="stitch"
-                        result="turbulence"
-                      >
-                        <animate
-                          attributeName="baseFrequency"
-                          from="0.01 0.01"
-                          to="0.02 0.02"
-                          dur="30s"
-                          repeatCount="indefinite"
-                        />
-                      </feTurbulence>
-                      <feDisplacementMap
-                        in="SourceGraphic"
-                        in2="turbulence"
-                        scale="30"
-                        xChannelSelector="R"
-                        yChannelSelector="G"
-                      />
-                    </filter>
-                    <rect width="100%" height="100%" fill="url(#gradient-selected)" filter="url(#turbulence-selected)" />
-                    <linearGradient id="gradient-selected" x1="0%" y1="0%" x2="100%" y2="100%">
-                      <stop offset="0%" stopColor="#4e6ef2" />
-                      <stop offset="100%" stopColor="#ea384c" />
-                    </linearGradient>
-                  </svg>
-                </div>
-                
+              <div className="bg-black text-white p-6 rounded-xl shadow-lg transition-all duration-300 hover:shadow-xl">
                 <div className="relative z-10">
                   <Button 
                     variant="outline" 
