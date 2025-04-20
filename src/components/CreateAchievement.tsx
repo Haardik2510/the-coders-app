@@ -57,11 +57,29 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
         const fileName = `${user.id}-${Date.now()}-${mediaFile.name}`;
         const filePath = `${mediaType === "image" ? "images" : "videos"}/${fileName}`;
 
+        // First check if the bucket exists
+        const { data: buckets } = await supabase.storage.listBuckets();
+        const bucketExists = buckets?.some(bucket => bucket.name === 'achievements');
+        
+        if (!bucketExists) {
+          toast({
+            variant: "destructive",
+            title: "Storage error",
+            description: "The achievements storage bucket does not exist.",
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        // Upload the file
         const { error: uploadError, data } = await supabase.storage
           .from("achievements")
           .upload(filePath, mediaFile);
 
-        if (uploadError) throw uploadError;
+        if (uploadError) {
+          console.error("Upload error:", uploadError);
+          throw new Error(`Error uploading file: ${uploadError.message}`);
+        }
 
         // Get public URL for the uploaded file
         const { data: { publicUrl } } = supabase.storage
@@ -81,7 +99,10 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
         media_type: mediaType
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Insert error:", error);
+        throw error;
+      }
 
       toast({
         title: "Success!",
@@ -94,10 +115,11 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
       setMediaType(null);
       if (onSuccess) onSuccess();
     } catch (error: any) {
+      console.error("Achievement creation error:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to create achievement",
       });
     } finally {
       setIsLoading(false);
