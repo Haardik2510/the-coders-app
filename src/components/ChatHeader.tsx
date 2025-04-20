@@ -21,12 +21,17 @@ interface ChatHeaderProps {
 const ChatHeader = ({ selectedUser, selectedUserId, currentUser, isFollowing, onFollowToggle }: ChatHeaderProps) => {
   const navigate = useNavigate();
 
+  const handleGoBack = () => {
+    // Navigate to the index page instead of just the chat list
+    navigate('/');
+  };
+
   return (
     <div className="flex items-center space-x-4 mb-6">
       <Button
         variant="ghost"
         size="icon"
-        onClick={() => navigate('/chat')}
+        onClick={handleGoBack}
       >
         <ArrowLeft className="h-5 w-5" />
       </Button>
