@@ -2,6 +2,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader } from "./ui/card";
+import { Skeleton } from "./ui/skeleton";
+import { AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "./ui/alert";
 
 // Define a proper type for the achievement data
 interface Achievement {
@@ -20,7 +23,7 @@ interface Achievement {
 }
 
 const AchievementsList = ({ type }: { type: "post" | "story" }) => {
-  const { data: achievements, isLoading } = useQuery({
+  const { data: achievements, isLoading, error } = useQuery({
     queryKey: ["achievements", type],
     queryFn: async () => {
       const timeLimit = type === "story" ? new Date(Date.now() - 24 * 60 * 60 * 1000) : undefined;
@@ -42,18 +45,62 @@ const AchievementsList = ({ type }: { type: "post" | "story" }) => {
       }
 
       const { data, error } = await query;
-      if (error) throw error;
+      if (error) {
+        console.error("Achievement query error:", error);
+        throw error;
+      }
       return data as Achievement[];
     },
   });
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <Card key={i} className="bg-black text-white border-none">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Skeleton className="h-8 w-8 rounded-full bg-white/10" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-24 bg-white/10" />
+                  <Skeleton className="h-3 w-16 bg-white/10" />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-5 w-full mb-2 bg-white/10" />
+              <Skeleton className="h-20 w-full bg-white/10" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <Alert variant="destructive" className="bg-red-900/20 border-red-800">
+        <AlertCircle className="h-4 w-4" />
+        <AlertDescription>
+          Error loading achievements. Please try again later.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
+  if (!achievements || achievements.length === 0) {
+    return (
+      <Alert className="bg-white/5 border-white/10">
+        <AlertDescription>
+          No {type}s found. Be the first to create one!
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (
     <div className="space-y-4">
-      {achievements?.map((achievement) => (
+      {achievements.map((achievement) => (
         <Card key={achievement.id} className="animate-fade-up bg-black text-white border-none">
           <CardHeader>
             <div className="flex items-center gap-2">
@@ -63,7 +110,9 @@ const AchievementsList = ({ type }: { type: "post" | "story" }) => {
                   {achievement.profiles?.username || "Anonymous"}
                 </p>
                 <p className="text-sm text-gray-400">
-                  {new Date(achievement.created_at!).toLocaleDateString()}
+                  {achievement.created_at 
+                    ? new Date(achievement.created_at).toLocaleDateString() 
+                    : "Unknown date"}
                 </p>
               </div>
             </div>
@@ -79,12 +128,21 @@ const AchievementsList = ({ type }: { type: "post" | "story" }) => {
                     src={achievement.media_url} 
                     alt={achievement.title}
                     className="w-full h-auto rounded-md" 
+                    onError={(e) => {
+                      console.error("Image failed to load:", achievement.media_url);
+                      e.currentTarget.src = "/placeholder.svg"; // Fallback image
+                    }}
                   />
                 ) : achievement.media_type === "video" ? (
                   <video 
                     src={achievement.media_url} 
                     controls
                     className="w-full h-auto rounded-md"
+                    onError={(e) => {
+                      console.error("Video failed to load:", achievement.media_url);
+                      const target = e.currentTarget;
+                      target.innerHTML = "Video failed to load";
+                    }}
                   />
                 ) : null}
               </div>
