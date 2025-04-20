@@ -3,6 +3,22 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader } from "./ui/card";
 
+// Define a proper type for the achievement data
+interface Achievement {
+  id: string;
+  user_id: string;
+  created_at: string | null;
+  title: string;
+  description: string | null;
+  type: string;
+  media_url: string | null;
+  media_type: string | null;
+  profiles?: {
+    username: string | null;
+    avatar_url: string | null;
+  } | null;
+}
+
 const AchievementsList = ({ type }: { type: "post" | "story" }) => {
   const { data: achievements, isLoading } = useQuery({
     queryKey: ["achievements", type],
@@ -27,7 +43,7 @@ const AchievementsList = ({ type }: { type: "post" | "story" }) => {
 
       const { data, error } = await query;
       if (error) throw error;
-      return data;
+      return data as Achievement[];
     },
   });
 

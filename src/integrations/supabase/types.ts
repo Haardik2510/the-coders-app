@@ -14,6 +14,8 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: string
+          media_type: string | null
+          media_url: string | null
           title: string
           type: string
           user_id: string
@@ -22,6 +24,8 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          media_type?: string | null
+          media_url?: string | null
           title: string
           type?: string
           user_id: string
@@ -30,6 +34,8 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: string
+          media_type?: string | null
+          media_url?: string | null
           title?: string
           type?: string
           user_id?: string
