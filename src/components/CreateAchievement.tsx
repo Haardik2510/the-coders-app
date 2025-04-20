@@ -19,6 +19,7 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [bucketExists, setBucketExists] = useState<boolean>(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -29,6 +30,25 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
     };
     
     checkAuth();
+
+    // Check if the bucket exists
+    const checkBucket = async () => {
+      try {
+        const { data, error } = await supabase.storage.getBucket('achievements');
+        if (error) {
+          console.log("Bucket check error:", error);
+          setBucketExists(false);
+        } else {
+          console.log("Bucket exists:", data);
+          setBucketExists(true);
+        }
+      } catch (err) {
+        console.error("Error checking bucket:", err);
+        setBucketExists(false);
+      }
+    };
+
+    checkBucket();
   }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,6 +81,10 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
         throw new Error("You must be logged in to create an achievement");
       }
 
+      if (!bucketExists) {
+        throw new Error("Storage is not configured properly. Please contact support.");
+      }
+
       // Get the current user's ID
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -76,6 +100,14 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
         const filePath = `${mediaType === "image" ? "images" : "videos"}/${fileName}`;
 
         try {
+          // Check if the 'achievements' bucket exists
+          const { data: bucketData, error: bucketError } = await supabase.storage.getBucket('achievements');
+          
+          if (bucketError) {
+            console.error("Bucket does not exist:", bucketError);
+            throw new Error(`Storage bucket not configured: ${bucketError.message}`);
+          }
+
           // Upload the file
           const { error: uploadError, data } = await supabase.storage
             .from("achievements")
@@ -172,6 +204,15 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
             </Alert>
           )}
           
+          {!bucketExists && isAuthenticated && (
+            <Alert variant="destructive" className="bg-amber-900/20 border-amber-800">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                Storage is not properly configured. Media uploads will not work.
+              </AlertDescription>
+            </Alert>
+          )}
+          
           {errorMessage && (
             <Alert variant="destructive" className="bg-red-900/20 border-red-800">
               <AlertCircle className="h-4 w-4" />
@@ -209,7 +250,7 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
                 variant={mediaType === "image" ? "default" : "outline"}
                 onClick={() => document.getElementById('media-upload')?.click()}
                 className="flex items-center gap-2"
-                disabled={!isAuthenticated}
+                disabled={!isAuthenticated || !bucketExists}
               >
                 <Image className="w-4 h-4" />
                 {mediaType === "image" ? "Image Selected" : "Add Image"}
@@ -219,7 +260,7 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
                 variant={mediaType === "video" ? "default" : "outline"}
                 onClick={() => document.getElementById('media-upload')?.click()}
                 className="flex items-center gap-2"
-                disabled={!isAuthenticated}
+                disabled={!isAuthenticated || !bucketExists}
               >
                 <Video className="w-4 h-4" />
                 {mediaType === "video" ? "Video Selected" : "Add Video"}
@@ -231,7 +272,7 @@ const CreateAchievement = ({ onSuccess }: { onSuccess?: () => void }) => {
               accept="image/*,video/*"
               onChange={handleFileChange}
               className="hidden"
-              disabled={!isAuthenticated}
+              disabled={!isAuthenticated || !bucketExists}
             />
             {mediaFile && (
               <div className="bg-white/5 p-2 rounded-md">
