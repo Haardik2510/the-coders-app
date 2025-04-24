@@ -4,6 +4,7 @@ import { Users } from 'lucide-react';
 import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from 'react-router-dom';
 
 interface GroupCardProps {
   group: {
@@ -16,6 +17,18 @@ interface GroupCardProps {
 }
 
 const GroupCard = ({ group }: GroupCardProps) => {
+  const navigate = useNavigate();
+
+  const handleJoinGroup = () => {
+    navigate(`/group-chat/${group.id}`, { 
+      state: { 
+        groupName: group.name,
+        groupDescription: group.description,
+        groupTags: group.tags
+      }
+    });
+  };
+
   return (
     <Card className="border-none bg-black text-white">
       <CardHeader className="relative z-10">
@@ -36,7 +49,10 @@ const GroupCard = ({ group }: GroupCardProps) => {
         </div>
       </CardContent>
       <CardFooter className="relative z-10">
-        <Button className="w-full animated-button animated-button-primary">
+        <Button 
+          className="w-full animated-button animated-button-primary"
+          onClick={handleJoinGroup}
+        >
           Join Group
         </Button>
       </CardFooter>

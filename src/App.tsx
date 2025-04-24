@@ -12,6 +12,7 @@ import Solve from "./pages/Solve";
 import Achievements from "./pages/Achievements";
 import Auth from "./pages/Auth";
 import Community from "./pages/Community";
+import GroupChat from "./pages/GroupChat";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -35,6 +36,7 @@ const App = () => {
               <Route path="/solve" element={<Solve />} />
               <Route path="/achievements" element={<Achievements />} />
               <Route path="/community" element={<Community />} />
+              <Route path="/group-chat/:groupId" element={<GroupChat />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
