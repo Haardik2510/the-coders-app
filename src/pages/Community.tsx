@@ -150,6 +150,11 @@ const Community = () => {
               </TabsContent>
               
               <TabsContent value="groups" className="grid md:grid-cols-2 gap-4 mt-4">
+                <Card className="gradient-card border-none bg-[#1a1f2c] p-4">
+                  <CardContent className="p-0">
+                    <CreateGroupDialog />
+                  </CardContent>
+                </Card>
                 {dummyGroups.map(group => (
                   <GroupCard key={group.id} group={group} />
                 ))}
