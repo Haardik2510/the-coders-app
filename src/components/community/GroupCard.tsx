@@ -5,10 +5,12 @@ import { Card, CardHeader, CardContent, CardFooter, CardTitle, CardDescription }
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface GroupCardProps {
   group: {
-    id: number;
+    id: number | string;
     name: string;
     members: number;
     description: string;
@@ -18,15 +20,44 @@ interface GroupCardProps {
 
 const GroupCard = ({ group }: GroupCardProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleJoinGroup = () => {
-    navigate(`/group-chat/${group.id}`, { 
-      state: { 
-        groupName: group.name,
-        groupDescription: group.description,
-        groupTags: group.tags
+  const handleJoinGroup = async () => {
+    try {
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !userData.user) {
+        throw new Error("User not authenticated");
       }
-    });
+
+      const { error } = await supabase.from('group_members').insert({
+        group_id: group.id,
+        user_id: userData.user.id
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Group Joined",
+        description: `You have successfully joined ${group.name}`,
+      });
+
+      navigate(`/group-chat/${group.id}`, { 
+        state: { 
+          groupName: group.name,
+          groupDescription: group.description,
+          groupTags: group.tags
+        }
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Could not join group. They might already be a member.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -42,7 +73,11 @@ const GroupCard = ({ group }: GroupCardProps) => {
         <p className="text-gray-300">{group.description}</p>
         <div className="flex flex-wrap gap-2 mt-3">
           {group.tags.map(tag => (
-            <Badge key={tag} variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-none">
+            <Badge 
+              key={tag} 
+              variant="outline" 
+              className="bg-white/10 hover:bg-white/20 text-white border-none"
+            >
               #{tag}
             </Badge>
           ))}

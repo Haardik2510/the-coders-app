@@ -33,7 +33,7 @@ const GroupMembers = ({ groupId }: GroupMembersProps) => {
 
     fetchMembers();
 
-    // Subscribe to member changes
+    // Subscribe to real-time member changes
     const channel = supabase
       .channel('group_members')
       .on('postgres_changes', {
@@ -55,7 +55,7 @@ const GroupMembers = ({ groupId }: GroupMembersProps) => {
     <Card className="bg-gray-900 border-gray-800">
       <CardHeader className="pb-3">
         <CardTitle className="text-white flex justify-between items-center">
-          <span>Group Members</span>
+          <span>Group Members ({members.length})</span>
           <InviteMemberDialog groupId={groupId} />
         </CardTitle>
       </CardHeader>
