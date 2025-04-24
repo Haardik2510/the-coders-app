@@ -10,6 +10,7 @@ import PostCard from "@/components/community/PostCard";
 import GroupCard from "@/components/community/GroupCard";
 import EventCard from "@/components/community/EventCard";
 import DiscoverCard from "@/components/community/DiscoverCard";
+import { CreateGroupDialog } from "@/components/group/CreateGroupDialog";
 
 const Community = () => {
   const dummyPosts = [

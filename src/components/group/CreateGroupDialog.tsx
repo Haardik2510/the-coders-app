@@ -21,10 +21,18 @@ export const CreateGroupDialog = () => {
 
   const onSubmit = async (data: CreateGroupForm) => {
     try {
-      const { error } = await supabase.from('groups').insert([{
+      // Get the current user's ID
+      const { data: userData, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !userData.user) {
+        throw new Error("User not authenticated");
+      }
+      
+      const { error } = await supabase.from('groups').insert({
         name: data.name,
-        description: data.description
-      }]);
+        description: data.description,
+        created_by: userData.user.id
+      });
 
       if (error) throw error;
 
