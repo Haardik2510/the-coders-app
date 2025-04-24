@@ -8,11 +8,16 @@ interface CollabEditorProps {
   groupId: string;
 }
 
+interface EditorState {
+  user: string;
+  line: number;
+}
+
 const CollabEditor = ({ groupId }: CollabEditorProps) => {
   const { toast } = useToast();
   const [code, setCode] = useState('// Write your collaborative code here\n\nfunction example() {\n  console.log("Hello, team!");\n}\n');
   const [language, setLanguage] = useState('javascript');
-  const [isEditing, setIsEditing] = useState({});
+  const [isEditing, setIsEditing] = useState<EditorState>({ user: '', line: 0 });
   
   // Simulate other users editing
   useEffect(() => {
@@ -20,7 +25,7 @@ const CollabEditor = ({ groupId }: CollabEditorProps) => {
       const randomUser = Math.floor(Math.random() * 2);
       if (randomUser === 0) {
         setIsEditing({ user: 'Alex', line: Math.floor(Math.random() * 5) + 1 });
-        setTimeout(() => setIsEditing({}), 3000);
+        setTimeout(() => setIsEditing({ user: '', line: 0 }), 3000);
       }
     }, 15000);
     
@@ -29,7 +34,6 @@ const CollabEditor = ({ groupId }: CollabEditorProps) => {
 
   const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCode(e.target.value);
-    // In a real app, you would sync this with other users in real-time
   };
 
   const handleRunCode = () => {
@@ -63,7 +67,7 @@ const CollabEditor = ({ groupId }: CollabEditorProps) => {
         <textarea
           value={code}
           onChange={handleCodeChange}
-          className="w-full h-full p-4 bg-gray-950 text-gray-300 font-mono text-sm resize-none focus:outline-none"
+          className="w-full h-full p-4 bg-gray-950 text-white font-mono text-sm resize-none focus:outline-none"
           spellCheck={false}
         />
         
@@ -82,7 +86,7 @@ const CollabEditor = ({ groupId }: CollabEditorProps) => {
         )}
       </div>
       
-      <div className="p-3 bg-gray-900 text-gray-400 text-xs">
+      <div className="p-3 bg-gray-900 text-white text-xs">
         <div className="flex justify-between">
           <span>Collaborative session active • Group #{groupId}</span>
           <span>2 users online</span>
